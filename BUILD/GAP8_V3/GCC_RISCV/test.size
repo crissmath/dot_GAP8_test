@@ -1,0 +1,250 @@
+   text	   data	    bss	    dec	    hex	filename
+ 0x5c10	 0x15f4	  0x34c	  30032	   7550	/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1b000bb8 00000001 D camera_isAwaked	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/camera/himax.c:150
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000338 00000001 D __rt_hyper_pending_emu_do_memcpy	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:53
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002c96 00000002 W illegal_insn_handler_c	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/irq.c:89
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0039ea 00000002 T __rt_fll_deinit	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/gap/pmu_driver.c:876
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0039ec 00000002 T __rt_flls_constructor	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/gap/pmu_driver.c:880
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003dd0 00000002 T __rt_hyper_resume_copy	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:988
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005d8c 00000003 d ToHWDCDC_Pos	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/gap/pmu_driver.c:192
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0056fc 00000004 t ctor_list	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/init.c:29
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005738 00000004 t dtor_list	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/init.c:30
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c006130 00000004 B first_delayed
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005d60 00000004 D GOLDEN_VALUE	/home/cribace/gap_sdk/dot_test/dot_test.c:18
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c006000 00000004 b __pi_hyper_cluster_reqs_first	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:62
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002c46 00000004 T pi_open_from_conf	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/init.c:325
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005d90 00000004 D PMURetentionState
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000354 00000004 D pwmEventsStatus	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/pwm/pwm.c:9
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005d9c 00000004 d RetPMUStateToPMUState	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/gap/pmu_driver.c:185
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00612c 00000004 B __rt_alloc_fc_tcdm
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c006124 00000004 B __rt_alloc_l1
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c006128 00000004 B __rt_alloc_l2
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000014 00000004 d __rt_bridge_eeprom_handle	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/bridge.c:25
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000010 00000004 d __rt_bridge_flash_cs	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/bridge.c:29
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000004 00000004 d __rt_bridge_flash_handle	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/bridge.c:26
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:0000000c 00000004 d __rt_bridge_flash_itf	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/bridge.c:28
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000008 00000004 d __rt_bridge_flash_type	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/bridge.c:27
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000390 00000004 D __rtc_handler	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/dolphin/rtc.c:25
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1000001c 00000004 D __rt_cluster_fc_task_lock	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/cluster.c:59
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000018 00000004 D __rt_cluster_nb_active_pe
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c006134 00000004 B __rt_cluster_tasks	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/cluster.c:41
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1b000b9c 00000004 D __rt_debug_config
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1b000b98 00000004 D __rt_debug_config_trace
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000014 00000004 D __rt_dma_first_pending
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000010 00000004 D __rt_dma_last_pending
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005ffc 00000004 b __rt_fc_cluster_device	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/pulpos_emu.c:25
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005d64 00000004 V __rt_fc_stack_size	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/conf.c:36
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000018 00000004 D __rt_first_free
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0039ee 00000004 T __rt_fll_set_freq	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/gap/pmu_driver.c:884
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000324 00000004 D __rt_hyper_current_task	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:27
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000320 00000004 D __rt_hyper_end_task	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:25
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c006004 00000004 b __rt_hyper_open_count	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:65
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000314 00000004 D __rt_hyper_pending_addr	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:33
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:0000030c 00000004 D __rt_hyper_pending_base	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:31
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000330 00000004 D __rt_hyper_pending_emu_addr	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:48
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000328 00000004 D __rt_hyper_pending_emu_channel	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:46
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:0000032c 00000004 D __rt_hyper_pending_emu_hyper_addr	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:47
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:0000034c 00000004 D __rt_hyper_pending_emu_length	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:51
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000334 00000004 D __rt_hyper_pending_emu_size	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:49
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000348 00000004 D __rt_hyper_pending_emu_size_2d	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:50
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000350 00000004 D __rt_hyper_pending_emu_stride	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:52
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:0000033c 00000004 D __rt_hyper_pending_emu_task	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:54
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000310 00000004 D __rt_hyper_pending_hyper_addr	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:32
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000318 00000004 D __rt_hyper_pending_repeat	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:34
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:0000031c 00000004 D __rt_hyper_pending_repeat_size	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:35
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000340 00000004 D __rt_hyper_pending_tasks	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:39
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000344 00000004 D __rt_hyper_pending_tasks_last	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:40
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000308 00000004 D __rt_hyper_udma_handle
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c006008 00000004 b __rt_i2s_first	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/i2s/i2s-v1.c:40
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005d68 00000004 V __rt_iodev
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005d6c 00000004 V __rt_iodev_uart_baudrate
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005ff4 00000004 V __rt_iodev_uart_channel
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c006014 00000004 b __rt_io_event_current	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:40
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c006018 00000004 b __rt_io_pending_flush	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:50
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c006020 00000004 b _rt_io_uart	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:38
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005d70 00000004 V __rt_platform
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00601c 00000004 b __rt_putc_host_buffer_index	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:48
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:0000038c 00000004 D __rt_rtc_init_done	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/dolphin/rtc.c:26
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c006168 00000004 B __rt_wakeup_use_fast	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/gap/pmu_driver.c:173
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005ff8 00000004 b timer_count	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/time.c:23
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0024d0 00000006 T pi_cluster_conf_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/cluster.c:337
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003dca 00000006 T __rt_hyper_resume_emu_task	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:980
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00462a 00000006 T semihost_exit	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/semihost.c:51
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c004624 00000006 T semihost_write0	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/semihost.c:6
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005d74 00000007 d SystemStateToSCUFastSeq	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/gap/pmu_driver.c:176
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00459c 00000008 T abort	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:739
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005d94 00000008 D FllsFrequency
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c006160 00000008 B __rt_freq_domains
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002a04 00000008 T rt_perf_conf	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/perf.c:31
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:000002b0 00000008 D __rt_socevents_status
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00600c 00000008 b __rt_spim_open_count	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/spim/spim-v2.c:26
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003f80 0000000a T __rt_himax_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/camera/himax.c:400
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003a1a 0000000a T __rt_padframe_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/pads/pads-v1.c:58
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000004 0000000c D __rt_cluster_pool
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c004616 0000000e t __internal_semihost	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/semihost.h:75
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003fae 0000000e t __rt_io_end_of_flush	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:366
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0029f6 0000000e T rt_perf_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/perf.c:23
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c004358 00000010 T memset	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:150
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005d7c 00000010 D PMUState
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1b000bbc 00000010 d __rt_io_fc_lock	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:35
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005c58 00000010 V __rt_padframe_default	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/pads/pads-v1.c:28
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005c68 00000010 V __rt_padframe_hyper	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/pads/pads-v1.c:30
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005c78 00000010 V __rt_padframe_hyper_gpio	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/pads/pads-v1.c:32
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005fe4 00000010 b __rt_uart	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/uart/uart.c:43
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005378 00000010 T rt_uart_conf_init
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00334e 00000012 T __rt_event_sched_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/events.c:264
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0039d8 00000012 T __rt_fll_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/gap/pmu_driver.c:871
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003f8a 00000012 T __rt_rtc_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/dolphin/rtc.c:414
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003f9c 00000012 T __rt_spim_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/spim/spim-v2.c:446
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003a24 00000014 t l2_memcpy	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:897
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:0000001c 00000014 D __rt_sched
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1b000ba0 00000018 d cbsys_first	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/utils.c:30
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0044e8 00000018 T fputc_locked
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003336 00000018 T rt_event_wait	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/events.c:257
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005c88 00000018 V __rt_padframe_profiles
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002074 00000018 t __rt_time_poweroff	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/time.c:28
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00208c 00000018 t __rt_time_poweron	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/time.c:37
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0031ba 00000018 T __rt_wait_event_prepare_blocking	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/events.c:42
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003248 0000001a T rt_event_get	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/events.c:105
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c004368 0000001a T strchr	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:278
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002f1c 0000001c t __rt_event_enqueue	/home/cribace/gap_sdk/install/GAP8_V3/include/rt/rt_event.h:397
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003096 0000001e T __rt_bridge_clear_notif	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/bridge.c:838
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003058 0000001e T __rt_bridge_set_available	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/bridge.c:725
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0046ec 00000020 t _rlrshift	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/prf.c:122
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002f38 00000020 t __rt_bridge_check_bridge_req.part.5	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/bridge.c:638
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003076 00000020 T __rt_bridge_send_notif	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/bridge.c:821
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0040a6 00000020 t rt_event_execute.isra.4.constprop.12	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:795
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005284 00000020 t __rt_uart_setfreq_after	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/uart/uart.c:135
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c001ede 00000020 T rt_user_alloc_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/alloc.c:193
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c001fc0 00000022 T __rt_alloc_init_l1	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/alloc.c:445
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003262 00000022 T rt_event_get_blocking	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/events.c:127
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002144 00000022 T rt_time_wait_us	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/time.c:124
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002e26 00000022 T __rt_utils_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/utils.c:84
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003a38 00000024 t rt_event_enqueue	/home/cribace/gap_sdk/install/GAP8_V3/include/rt/rt_event.h:411
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003284 00000024 T rt_event_push	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/events.c:139
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005260 00000024 t __rt_uart_setup.isra.5	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/uart/uart.c:222
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002a98 00000026 t cluster_start	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/init.c:198
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c004332 00000026 t __rt_io_stop	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:769
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0020a4 00000026 T rt_time_get_us	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/time.c:45
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00523a 00000026 T __rt_uart_cluster_req_done	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/uart/uart.c:253
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0035f8 00000026 t soc_eu_fcEventMask_setEvent	/home/cribace/gap_sdk/install/GAP8_V3/include/hal/soc_eu/soc_eu_v1.h:60
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005352 00000026 t soc_eu_fcEventMask_setEvent	/home/cribace/gap_sdk/install/GAP8_V3/include/hal/soc_eu/soc_eu_v1.h:60
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c004500 00000028 T _prf_locked	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:626
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0044c0 00000028 T puts	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:576
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c001fe2 00000028 T __rt_alloc_init_l1_for_fc	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/alloc.c:452
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002c1e 00000028 T __rt_deinit	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/init.c:163
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c006138 00000028 B __rt_fc_cluster_data
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003edc 00000028 t __rt_i2s_setfreq_after	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/i2s/i2s-v1.c:235
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0039f2 00000028 T rt_padframe_set	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/pads/pads-v1.c:77
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:000002b8 00000028 D __rt_udma_extra_callback
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:000002e0 00000028 D __rt_udma_extra_callback_arg
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c004630 0000002a T printf	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/fprintf.c:41
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003190 0000002a T __rt_event_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/events.c:32
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0052e6 0000002a t __rt_uart_setfreq_before	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/uart/uart.c:102
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00330c 0000002a T __rt_wait_event	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/events.c:247
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003f04 0000002c t __rt_i2s_setfreq_before	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/i2s/i2s-v1.c:219
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005e20 0000002c b __rt_pulpos_emu_global_cluster_task	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/pulpos_emu.c:26
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0035cc 0000002c t SetFllMultDivFactors
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c001f92 0000002e T rt_alloc
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002df6 00000030 T __rt_cbsys_exec	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/utils.c:71
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0025aa 00000032 T pi_cluster_close	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/cluster.c:370
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002e48 00000032 T __rt_fc_lock	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/utils.c:92
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c004136 00000032 t __rt_putc_host_cluster_req	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:451
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000358 00000034 D dev_rtc	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/dolphin/rtc.c:24
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c004750 00000034 t _get_digit	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/prf.c:167
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00315c 00000034 T __rt_bridge_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/bridge.c:851
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002e7a 00000034 T __rt_fc_unlock	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/utils.c:127
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003ea8 00000034 t __rt_i2s_resume	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/i2s/i2s-v1.c:186
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00545c 00000034 T rt_uart_cluster_write	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/uart/uart.c:277
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002ee6 00000036 T __rt_fc_cluster_unlock	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/utils.c:199
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002eae 00000038 T __rt_fc_cluster_lock	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/utils.c:189
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0043e0 00000038 T __rt_putc_uart	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:412
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0030b4 0000003a T __rt_bridge_printf_flush
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00264c 0000003c T __rt_cluster_new	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/cluster.c:445
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002688 0000003c t __rt_cluster_pulpos_emu_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/pulpos_emu.c:29
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00358e 0000003e T __rt_freq_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/gap/freq.c:62
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0038ec 00000040 T InitFlls	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/gap/pmu_driver.c:858
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002db6 00000040 T __rt_cbsys_add	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/utils.c:57
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00400c 00000040 t __rt_do_putc_host	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:430
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005310 00000042 t __rt_uart_cluster_req	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/uart/uart.c:266
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0052a4 00000042 t __rt_uart_wait_tx_done.isra.6	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/uart/uart.c:222
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00470c 00000044 t _ldiv5	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/prf.c:143
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003ab4 00000044 t __pi_hyper_copy_exec
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002f58 00000044 t __rt_bridge_wait
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c001efe 00000048 T rt_user_alloc	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/alloc.c:207
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00300e 0000004a T __rt_bridge_check_connection
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003544 0000004a T rt_freq_set_and_get	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/gap/freq.c:30
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002c4a 0000004c T rt_irq_set_handler	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/irq.c:61
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005410 0000004c T rt_uart_close	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/uart/uart.c:228
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c001f46 0000004c T rt_user_free	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/alloc.c:291
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003af8 00000050 t exec_pending_task	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:867
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002c98 00000050 T __rt_handle_illegal_instr	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/irq.c:94
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003dd2 00000050 t __rt_hyper_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:995
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003f30 00000050 T __rt_i2s_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/i2s/i2s-v1.c:268
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003fbc 00000050 t __rt_io_uart_wait_req	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:315
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002ce8 00000052 T __rt_irq_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/irq.c:103
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002754 00000054 T rt_cluster_mount	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/pulpos_emu.c:68
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003490 00000056 T __rt_periph_wait_event	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/periph-v2.c:237
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003a5c 00000058 T __pi_hyper_copy_aligned	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:480
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00404c 0000005a t __rt_io_start	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:746
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005490 0000005c T __rt_uart_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/uart/uart.c:292
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0034e6 0000005e T __rt_periph_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/periph-v2.c:276
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c004382 0000005e T __rt_putc_debug_bridge	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:288
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0022e4 00000062 t __rt_init_cluster_data	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/cluster.c:72
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002346 00000064 t __rt_cluster_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/cluster.c:382
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0032a8 00000064 T __rt_event_execute	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/events.c:189
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00200a 0000006a T __rt_allocs_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/alloc.c:465
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0030ee 0000006e T __rt_bridge_req_shutdown	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/bridge.c:774
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0025dc 00000070 T __rt_cluster_push_fc_event	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/cluster.c:413
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0040c6 00000070 t __rt_io_lock
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c004168 00000070 t __rt_io_unlock
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002f9c 00000072 T __rt_bridge_handle_notif	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/bridge.c:644
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0045a4 00000072 T __rt_io_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:800
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c004528 00000074 T exit	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:690
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0031d2 00000076 T rt_event_alloc	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/events.c:52
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0020ca 0000007a T rt_event_push_delayed	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/time.c:59
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002d3a 0000007c t __rt_fc_cluster_lock_req	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/utils.c:142
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005e4c 00000080 b __pi_hyper_temp_buffer	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:160
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005f64 00000080 b __rt_io_event	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:39
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005da0 00000080 d __rt_putc_host_buffer	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:47
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0060a4 00000080 B vecA	/home/cribace/gap_sdk/dot_test/dot_test.c:14
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c006024 00000080 B vecB	/home/cribace/gap_sdk/dot_test/dot_test.c:15
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003e22 00000086 T __pi_gpio_handler	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/gpio/gpio-v2.c:54
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c001b38 00000088 T __extendsfdf2	/home/haugoug/src/riscv-gnu-toolchain/riscv-gcc/libgcc/soft-fp/extendsfdf2.c:37
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005388 00000088 T __rt_uart_open	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers_deprecated/uart/uart.c:151
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0042a6 0000008c t __rt_io_uart_wait_pending	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:332
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002a0c 0000008c T rt_perf_save	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/perf.c:42
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00361e 0000008c T __rt_pmu_cluster_power_down	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/gap/pmu_driver.c:205
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002166 0000008c T __rt_time_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/time.c:136
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c001aa8 00000090 T __floatunsisf	/home/haugoug/src/riscv-gnu-toolchain/riscv-gcc/libgcc/soft-fp/floatunsisf.c:35
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0026c4 00000090 T rt_cluster_call	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/pulpos_emu.c:40
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c001e4c 00000092 T main	/home/cribace/gap_sdk/dot_test/dot_test.c:30
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00465a 00000092 t _to_x	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/prf.c:44
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005ecc 00000098 b __rt_gpio	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/gpio/gpio-v2.c:34
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003788 000000a2 T InitOneFll	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/gap/pmu_driver.c:771
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c004418 000000a8 t tfp_putc.isra.9	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:795
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00392c 000000ac T __rt_pmu_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/gap/pmu_driver.c:472
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c005ca0 000000c0 D __hal_debug_struct
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00382a 000000c2 T __rt_pmu_cluster_power_up
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0041d8 000000ce t __rt_io_uart_flush.constprop.11	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/io.c:795
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0024d6 000000d4 T pi_cluster_open	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/cluster.c:343
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0036aa 000000de T SetFllFrequency
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0021f2 000000f2 T __rt_timer_handler	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/time_irq.c:30
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0027a8 000000fa T pi_cluster_send_task_to_cl_async	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/cluster_call.c:65
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0057f4 00000100 R __clz_tab
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c001bc0 00000114 T __truncdfsf2	/home/haugoug/src/riscv-gnu-toolchain/riscv-gcc/libgcc/soft-fp/truncdfsf2.c:36
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0023aa 00000126 t __rt_cluster_mount_step	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/cluster.c:221
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003360 00000130 T rt_periph_copy	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/periph-v2.c:58
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0028a2 00000154 t cpu_perf_get	/home/cribace/gap_sdk/install/GAP8_V3/include/hal/riscv/riscv_v4.h:336
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c002abe 00000160 T __rt_init	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/init.c:74
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c001cd4 00000178 T dotproduct_simd	/home/cribace/gap_sdk/dot_test/dot_test.c:57
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0015a6 000001fe T __divsf3	/home/haugoug/src/riscv-gnu-toolchain/riscv-gcc/libgcc/soft-fp/divsf3.c:35
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:00000030 00000280 D periph_channels
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c003b48 00000282 t __pi_hyper_copy_misaligned	/home/cribace/gap_sdk/rtos/pulp/pulp-os/drivers/hyper/hyperram-v1.c:806
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c0017a4 00000304 T __subsf3	/home/haugoug/src/riscv-gnu-toolchain/riscv-gcc/libgcc/soft-fp/subsf3.c:35
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00096c 0000032e T __umoddi3	/home/haugoug/src/riscv-gnu-toolchain/riscv-gcc/libgcc/libgcc2.c:1305
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c000630 0000033c T __udivdi3	/home/haugoug/src/riscv-gnu-toolchain/riscv-gcc/libgcc/libgcc2.c:1317
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c00116c 0000043a T __muldf3	/home/haugoug/src/riscv-gnu-toolchain/riscv-gcc/libgcc/soft-fp/muldf3.c:35
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c000c9a 000004d2 T __divdf3	/home/haugoug/src/riscv-gnu-toolchain/riscv-gcc/libgcc/soft-fp/divdf3.c:35
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1b000398 00000800 D __rt_fc_stack	/home/cribace/gap_sdk/rtos/pulp/pulp-os/kernel/conf.c:38
+/home/cribace/gap_sdk/dot_test/BUILD/GAP8_V3/GCC_RISCV/test:1c004784 00000ab6 T _prf	/home/cribace/gap_sdk/rtos/pulp/pulp-os/libs/io/prf.c:437
