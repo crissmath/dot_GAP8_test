@@ -1,0 +1,94 @@
+gapy --target=gapuino_v3 --platform=board --work-dir=/home/cribace/gap_sdk/dot_GAP8_test/BUILD/GAP8_V3/GCC_RISCV_PULPOS      run --exec-prepare --exec --binary=/home/cribace/gap_sdk/dot_GAP8_test/BUILD/GAP8_V3/GCC_RISCV_PULPOS/dot_test  
+TARGET create
+GAP8 INIT TARGET
+GAP8 examine target
+Init jtag
+Initialising GAP8 JTAG TAP
+Loading binary through JTAG
+
+
+	    *** Dot product test *** 
+
+Entering main controller
+[cl_id = 32, core_id = 0] Hello World!
+Fabric Controller Frequency 250000000 Hz
+Cluster Frequency 175000000 Hz
+Cluster master core entry
+init vector
+ v[0] = 0 
+ v[1] = 1 
+ v[2] = 2 
+ v[3] = 3 
+ v[4] = 4 
+ v[5] = 5 
+ v[6] = 6 
+ v[7] = 7 
+ v[0] = 1 
+ v[1] = 2 
+ v[2] = 3 
+ v[3] = 4 
+ v[4] = 5 
+ v[5] = 6 
+ v[6] = 7 
+ v[7] = 8 
+Run Dot product
+Perf of dot product: 
+ 	 cycles : 38 
+ 	 instructions : 116 
+ 	 load stalls : 38 
+ 	 jump stalls : 38 
+ 	 insrtructions stalls: 38 
+
+Perf of dot product: 
+ 	 cycles : 38 
+ 	 instructions : 116 
+ 	 load stalls : 38 
+ 	 jump stalls : 38 
+ 	 insrtructions stalls: 38 
+
+Perf of dot product: 
+ 	 cycles : 38 
+ 	 instructions : 116 
+ 	 load stalls : 38 
+ 	 jump stalls : 38 
+ 	 insrtructions stalls: 38 
+
+Perf of dot product: 
+ 	 cycles : 38 
+ 	 instructions : 116 
+ 	 load stalls : 38 
+ 	 jump stalls : 38 
+ 	 insrtructions stalls: 38 
+
+Perf of dot product: 
+ 	 cycles : 38 
+ 	 instructions : 116 
+ 	 load stalls : 38 
+ 	 jump stalls : 38 
+ 	 insrtructions stalls: 38 
+
+Perf of dot product: 
+ 	 cycles : 38 
+ 	 instructions : 116 
+ 	 load stalls : 38 
+ 	 jump stalls : 38 
+ 	 insrtructions stalls: 38 
+
+Perf of dot product: 
+ 	 cycles : 38 
+ 	 instructions : 116 
+ 	 load stalls : 38 
+ 	 jump stalls : 38 
+ 	 insrtructions stalls: 38 
+
+Perf of dot product: 
+ 	 cycles : 38 
+ 	 instructions : 116 
+ 	 load stalls : 38 
+ 	 jump stalls : 38 
+ 	 insrtructions stalls: 38 
+
+Computation done in 78 cycles at 0.82 operations per cycle....
+Test success !
+Launching execution with command:
+gap8-openocd -d0 -c 'gdb_port disabled; telnet_port disabled; tcl_port disabled' -f interface/ftdi/gapuino_ftdi.cfg -f target/gap8revb.tcl -f tcl/jtag_boot_entry.tcl -c 'gap8_jtag_load_binary_and_start "/home/cribace/gap_sdk/dot_GAP8_test/BUILD/GAP8_V3/GCC_RISCV_PULPOS/dot_test" elf 0x1c000080'
