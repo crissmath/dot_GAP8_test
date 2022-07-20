@@ -5,8 +5,10 @@
 #include "pulp.h"
 #include "pmsis.h"
 #include "rt/rt_api.h"
+#include "bsp/ram.h"
+#include "bsp/ram/hyperram.h"
 
-#define V_size 4    
+#define V_size 16384
 #define pi_pmu_set_voltage(x, y)      ( rt_voltage_force(RT_VOLTAGE_DOMAIN_MAIN, x, NULL) )
 /*Select function*/
 //#define use_simd
@@ -24,13 +26,16 @@ typedef struct dot_arg{
 }dot_arg_t;
 
 dot_arg_t Arg;
-
-
 /***************************************
 *          SIMD DOT 
 ****************************************/
 void dotproduct_simd(dot_arg_t *Arg)
-{
+{    
+    signed char *vA    = Arg->v_a;
+    signed char *vB    = Arg->v_b;
+    uint32_t    *c     = Arg->acc;
+    uint32_t     N     = Arg->dim;
+
     uint i, base = 0;
     float t1, t2;
     unsigned int instr, cycles, ldstall, jrstall, imstall;
@@ -51,24 +56,24 @@ void dotproduct_simd(dot_arg_t *Arg)
     //start the monitoring
     rt_perf_start(perf);
     t1   = rt_time_get_us();
-    for(i = 0; i<N; i=i+4){ 
+    for(i = 0; i < N; i=i+4){ 
         A = *((v4u *) (&vA[i])); // load A
         B = *((v4u *) (&vB[i])); // load B
         /*printf(" i = %d\n", i);
-        printf("A[%d] = %u, A[%d] = %u, A[%d] = %u, A[%d] = %u\n", base, A[base], base+1, A[base+1], base+2, A[base+2], base+3, A[base+3]);
-        printf("B[%d] = %u, B[%d] = %u, B[%d] = %u, B[%d] = %u\n", base, B[base], base+1, B[base+1], base+2, B[base+2], base+3, B[base+3]);*/
-        acc += gap8_sumdotpu4(A, B, acc);
+        printf("A[%d] = %u, A[%d] = %u, A[%d] = %u, A[%d] = %u\n",
+                 base, A[base], base+1, A[base+1], base+2, A[base+2], base+3, A[base+3]);
+        printf("B[%d] = %u, B[%d] = %u, B[%d] = %u, B[%d] = %u\n",
+                 base, B[base], base+1, B[base+1], base+2, B[base+2], base+3, B[base+3]);*/
+        *c = gap8_sumdotpu4(A, B, *c);
         //printf("acc = %d \n", acc);
         //acc += vA[i]*vB[i];
     }
     t2   = rt_time_get_us();
-
-  printf(" acc = %d\n", acc);
-  /*  
-    int instruciones = 4*(8*INS); 
-    float time = (t2 - t1)/1e6;
-    float Gflops = instruciones/(time*1e9);
-    printf("intruc = %d, time = %f, Gflops = %f\n", instruciones, time, Gflops); 
+  
+    //int instruciones = 4*(8*INS); 
+    //float time = (t2 - t1)/1e6;
+    //float Gflops = instruciones/(time*1e9);
+    //printf("intruc = %d, time = %f, Gflops = %f\n", instruciones, time, Gflops); 
     //stop the HW counter used for monitoring
     rt_perf_stop(perf);
 
@@ -81,23 +86,22 @@ void dotproduct_simd(dot_arg_t *Arg)
     jrstall = rt_perf_get(perf, RT_PERF_JR_STALL);
     imstall = rt_perf_get(perf, RT_PERF_IMISS);
 
-    printf("Perf of dot product: \n \t cycles : %d \n \t instructions : %d \n \t load stalls : %d \n \t jump stalls : %d \n \t insrtructions stalls: %d \n\n", cycles, instr, ldstall, jrstall, imstall);
-*/
+    printf("Perf of dot product: \n \t cycles : %d "
+                                "\n \t instructions : %d"
+                                "\n \t load stalls : %d"
+                                "\n \t jump stalls : %d"
+                                "\n \t insrtructions stalls: %d"
+                                "\n\n", cycles, instr, ldstall, jrstall, imstall);
     pi_cl_team_barrier();
-  
 }
-
-
-
 /***************************************
 *          DOT Product 
 ****************************************/
 void dotproduct( dot_arg_t *Arg)
 {
-
     signed char *vA    = Arg->v_a;
     signed char *vB    = Arg->v_b;
-    uint32_t    *c   = Arg->acc;
+    uint32_t    *c     = Arg->acc;
     uint32_t     N     = Arg->dim;
 
     int i;
@@ -116,26 +120,18 @@ void dotproduct( dot_arg_t *Arg)
     //start the monitoring
     rt_perf_start(perf);
 
-    printf(" acc = %d\n", *c);
-
     for(i = 0; i<N; i++){
         *c += vA[i]*vB[i];
     }
-
-    printf(" acc = %d\n", *c);
-
     //stop the HW counter used for monitoring
     rt_perf_stop(perf);
-
     //get the total measurement
     rt_perf_save(perf);
-
     instr   = rt_perf_get(perf, RT_PERF_INSTR);
     cycles  = rt_perf_get(perf, RT_PERF_ACTIVE_CYCLES);
     ldstall = rt_perf_get(perf, RT_PERF_LD_STALL);
     jrstall = rt_perf_get(perf, RT_PERF_JR_STALL);
     imstall = rt_perf_get(perf, RT_PERF_IMISS);
-
     printf("Perf of dot product: \n \t cycles : %d "
                                  "\n \t instructions : %d"
                                  "\n \t load stalls : %d"
@@ -154,7 +150,6 @@ void dotproduct( dot_arg_t *Arg)
        for(i=0;i<n;i++)
            V[i] = 0;
    }
-
 /***************************************
 *          Init vectors
 *****************************************/
@@ -162,7 +157,7 @@ void dotproduct( dot_arg_t *Arg)
    { 
        int i;
        for(i=0;i<n;i++)
-           V[i] = (signed char)i + off;
+           V[i] = (signed char)1 + off;
    }
 /***************************************
 *          Print vectors
@@ -197,16 +192,29 @@ void dummy( dot_arg_t *Arg){
     pi_cl_team_barrier();
 }
 
+/**************************************************
+*               Delegate function
+*  In this function we are in the core 0 of cluster
+***************************************************/
 void cluster_delegate(void *arg)
 {
+/*In this function we are in the core 0 of the cluster*/
     unsigned int time;
     uint32_t acc = 0;
-
     printf("Cluster master core entry\n");
+  /* init ram */
+    struct pi_device ram;           /* ram object */
+    struct pi_hyperram_conf conf;   /* config object */
+    pi_hyperram_conf_init(&conf);
+    pi_open_from_conf(&ram, &conf);
+    if (pi_ram_open(&ram)) {
+    printf("Error ram open !\n");
+    pmsis_exit(-3);
+    }
     // vector allocation
-    va  = (signed char *) pi_l2_malloc((uint32_t)(V_size * sizeof(signed char)));
-    vb  = (signed char *) pi_l2_malloc((uint32_t)(V_size * sizeof(signed char)));
-    out = (uint32_t *)    pi_l2_malloc((uint32_t)(sizeof(uint32_t)));
+    va  = (signed char *) pmsis_l1_malloc((uint32_t)(V_size * sizeof(signed char)));
+    vb  = (signed char *) pmsis_l1_malloc((uint32_t)(V_size * sizeof(signed char)));
+    out = (uint32_t *)    pmsis_l1_malloc((uint32_t)(sizeof(uint32_t)));
     if (va == NULL) {
     printf("buff alloc failed v_A!\n");
     pmsis_exit(-1);
@@ -222,15 +230,15 @@ void cluster_delegate(void *arg)
 
     // init vector
     init_vec(va, V_size, 0);
-    init_vec(vb, V_size, 0);
+    init_vec(vb, V_size, 2);
     out = &acc;
 
     printf("init vector\n");
     printf("VA\n");
-    print_vec(va, V_size);
+    //print_vec(va, V_size);
     printf("VB\n");
-    print_vec(vb, V_size);
-    printf("c = %d\n", *(out));
+    //print_vec(vb, V_size);
+    printf("c = %d\n\n\n", *(out));
 
   /*
     Tasks to execute
@@ -240,36 +248,27 @@ void cluster_delegate(void *arg)
     Arg.v_b = vb;
     Arg.acc = out;
     Arg.dim = V_size;
-    pi_cl_team_fork( 1, (void *)dummy, (void *) &Arg);
+    
+    /*pi_cl_team_fork( 1, (void *)dummy, (void *) &Arg);
+    printf("acc=%d\n", acc);*/
+
+    //uint nb_cores = pi_cl_cluster_nb_cores();
+    uint nb_cores = 1;
+
+    printf("Run dot\n");
+    pi_cl_team_fork( nb_cores, (void *)dotproduct, (void *) &Arg);
     printf("acc=%d\n", acc);
 
-    pi_cl_team_fork( 1, (void *)dotproduct, (void *) &Arg);
+    acc = 0;
 
-
-    /*
-    time = pi_perf_read(PI_PERF_ACTIVE_CYCLES);
-    printf("Computation done in %d cycles at %.2f operations per cycle....\n", 
-            time, ((float) (V_size*V_size)/time));
-    printf(" v_C = %d\n", v_C);
-    */
- /*   printf("Run SIMD Dot product\n");
-    pi_perf_conf(1 << PI_PERF_ACTIVE_CYCLES);
-    pi_perf_reset(); 
-    pi_perf_start();
-    pi_cl_team_fork( 1, dotproduct_simd, (acc, v_A, v_B, V_size));
-    pi_perf_stop();
-
-    time = pi_perf_read(PI_PERF_ACTIVE_CYCLES);
-    printf("Computation done in %d cycles at %.2f operations per cycle....\n", 
-            time, ((float) (V_size*V_size)/time));
-*/
+    printf("Run dotSIMD\n");
+    pi_cl_team_fork( nb_cores, (void *)dotproduct_simd, (void *) &Arg);
+    printf("acc=%d\n", acc);
 }
-
-
 
 int fc_main()
 {
-  printf("Entering main controller\n");
+  printf("Entering Fabric Controller\n");
   uint32_t errors = 0;
   uint32_t core_id = pi_core_id();
   uint32_t cluster_id = pi_cluster_id();
@@ -284,6 +283,7 @@ int fc_main()
         printf("Frequency set failed!\n");
         pmsis_exit(-1);
     }
+
     /* 
         Set Cluster Freq at 250 MHz 
     */
@@ -291,7 +291,7 @@ int fc_main()
     pi_freq_set(PI_FREQ_DOMAIN_FC, fc_freq_in_Hz);
     printf("Fabric Controller Frequency %d Hz\n", (int) pi_freq_get(PI_FREQ_DOMAIN_FC));
     /* 
-        Configure & open cluster. 
+        ***** Configure & open cluster ******
     */
     struct pi_device cluster_dev   = {0};
     struct pi_cluster_conf cl_conf = {0};
@@ -330,7 +330,6 @@ int fc_main()
   /*
   unsigned int acc = 0;
     if(get_core_id() == 0) {
-
        // choose the function use 
        #ifdef use_simd
        printf("SIMD\n");
@@ -349,11 +348,9 @@ int fc_main()
          printf("Nice! Well done! 0 errors\n");
      }
     */
-  
 }// end main 
 
 int main(void){
-
       printf("\n\n\t    *** Dot product test *** \n\n");
       return pmsis_kickoff((void *) fc_main);
 }

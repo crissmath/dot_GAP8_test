@@ -35,7 +35,7 @@ void dotproduct_simd(signed int acc, signed char* vA, signed char* vB, signed in
     }
     t2   = rt_time_get_us();
 
-  printf(" acc = %d\n", acc);
+  //printf(" acc = %d\n", acc);
   /*  
     int instruciones = 4*(8*INS); 
     float time = (t2 - t1)/1e6;
