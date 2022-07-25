@@ -8,24 +8,49 @@
 #include "bsp/ram.h"
 #include "bsp/ram/hyperram.h"
 
-#define V_size 16384
+//#define VERBOSE
+#define V_size 24             // vector size
+#define BUFFER_SIZE_L2 (8)    // buffer size
+
+// Com Buffers 
+signed char *buff_comm;
+signed char *buff_com_tmp;
+
+/* init ram */
+struct pi_device ram;           /* ram object */
+struct pi_hyperram_conf conf;   /* config object */
+//
+signed char *L3_va;
+signed char *L3_vb;
+uint32_t    *L3_out;
+
+// set voltage
 #define pi_pmu_set_voltage(x, y)      ( rt_voltage_force(RT_VOLTAGE_DOMAIN_MAIN, x, NULL) )
-/*Select function*/
-//#define use_simd
-#define use_normal
 
-signed char *va;
-signed char *vb;
-uint32_t    *out;
-
-typedef struct dot_arg{
-    signed char *v_a;
-    signed char *v_b;
-    uint32_t    *acc;
-    uint32_t    dim;
+// struct for dot product task
+typedef struct   dot_arg
+{
+    signed char  *v_a;
+    signed char  *v_b;
+    uint32_t     *acc;
+    uint32_t     dim;
 }dot_arg_t;
 
 dot_arg_t Arg;
+
+// struct for dot product Cluster task
+typedef struct dot_cl_arg{
+    signed char * L2_va;
+    signed char * L2_vb;
+    signed char * L1_va;
+    signed char * L1_vb;
+    uint32_t    * L1_acc;
+    uint32_t    * L2_acc;
+    uint32_t    dim;
+}dot_cl_arg_t;
+
+dot_cl_arg_t cl_Arg;
+
 /***************************************
 *          SIMD DOT 
 ****************************************/
@@ -178,7 +203,7 @@ void dummy( dot_arg_t *Arg){
     signed char *a    = Arg->v_a;
     signed char *b    = Arg->v_b;
     uint32_t    *c    = Arg->acc;
-    uint32_t     N     = Arg->dim;
+    uint32_t     N    = Arg->dim;
 
     print_vec(a, N);
     print_vec(b, N);
@@ -192,61 +217,213 @@ void dummy( dot_arg_t *Arg){
     pi_cl_team_barrier();
 }
 
-/**************************************************
+/***************************************
+*    Generate vector L3
+*****************************************/
+void generate_vector_L3( uint32_t n, signed char *V,
+                         struct pi_device *ram, signed char *buff_com) {
+#ifdef VERBOSE
+  printf("start generate...\n");
+#endif
+  static int factor = 1;
+  uint32_t b, i, ncp, resto = 0, base = 0;
+  // number of blocks
+  ncp = (uint32_t)(n * sizeof(unsigned char)) / BUFFER_SIZE_L2;
+  // last part of vector 
+  resto = (uint32_t)(n * sizeof(unsigned char)) % BUFFER_SIZE_L2;
+#ifdef VERBOSE
+  printf("number of cp resto : %d %d\n", ncp, resto);
+#endif
+  for (b = 0; b < ncp; b++) {
+    base = b * BUFFER_SIZE_L2;
+    for (i = 0; i < BUFFER_SIZE_L2; i++) {
+      buff_com[i] = (signed char)((b * 2 + i % 4) - 1);
+#ifdef VERBOSE
+  printf("buff_comm[%i]: %d \n", i, buff_com[i]);
+#endif
+    }
+    // copy L2->L3
+    pi_ram_write(ram, (uint32_t)V + base, buff_com, (uint32_t)BUFFER_SIZE_L2);
+  }
+  if (resto > 0) {
+    for (i = 0; i < resto; i++) {
+      buff_com[i] = (signed char)((i + 1) * factor);
+    }
+    pi_ram_copy(ram, (uint32_t)V + base, buff_com, (uint32_t)resto, 0);
+  }
+  factor++;
+#ifdef VERBOSE
+  printf("end generate ..\n");
+#endif
+}
+/**********************************************************************
+ *
+ *                        Print Vector from L3
+ *
+ **********************************************************************/
+/*! \brief This function printed the vector of size m*n allocated in the ram
+ *
+ * This function requires the size (n) and the buffer(buffer_com) where the
+ * vector is going to be read.
+ **********************************************************************/
+void print_vector_L3(char *name, uint32_t n, unsigned char *V,
+                     struct pi_device *ram, signed char *buff_com) {
+
+  printf("init printmatrix !...\n");
+  buff_com = (signed char *)pmsis_l2_malloc((uint32_t)BUFFER_SIZE_L2);
+  if (buff_com == NULL) {
+    printf("Error allocation buff_comm!\n");
+    pmsis_exit(-1);
+  }
+
+  uint32_t b, i, ncp, resto = 0, base = 0;
+  // nb blks
+  ncp   = (uint32_t)( n * sizeof(signed char)) / BUFFER_SIZE_L2;
+  // last part of blk
+  resto = (uint32_t)( n * sizeof(signed char)) % BUFFER_SIZE_L2;
+#ifdef VERBOSE
+  printf("number of cp resto : %d %d\n", ncp, resto);
+#endif
+  for (b = 0; b < ncp; b++) {
+    base = b * BUFFER_SIZE_L2;
+    pi_ram_read(ram, (uint32_t)V + base, buff_com, (uint32_t)BUFFER_SIZE_L2);
+    for (i = 0; i < (uint32_t)BUFFER_SIZE_L2; i++) {
+      printf("%s[%d,%d] = %d;\n", name, b, i, buff_com[i]);
+    }
+  }
+  if (resto > 0) {
+    pi_ram_read(ram, (uint32_t)V + base, buff_com, (uint32_t)resto);
+    for (i = 0; i < (uint32_t)resto; i++) {
+      printf("%s[%d,%d] = %d;\n", name, b, i, buff_com[i]);
+    }
+  }
+  pmsis_l2_malloc_free(buff_com, (uint32_t)BUFFER_SIZE_L2);
+  printf("fin printmatrix...\n");
+}
+/************************************************************
+*               Dot Cluster DMA  
+*        core0(master) of the cluster
+*************************************************************/
+void cluster_dma(dot_cl_arg_t *cl_Arg)
+{
+    signed char *L2_va  = cl_Arg->L2_va;
+    signed char *L2_vb  = cl_Arg->L2_vb;
+    signed char *L1_va  = cl_Arg->L1_va;
+    signed char *L1_vb  = cl_Arg->L1_vb;
+    uint32_t    *L2_acc = cl_Arg->L2_acc;
+    uint32_t    *L1_acc = cl_Arg->L1_acc;
+    uint32_t      N     = cl_Arg->dim;
+
+    uint32_t coreid = pi_core_id(), start = 0, end = 0;
+
+    //Core0(master) of cluster init DMA transfer L2->L1.
+    if (!coreid)
+    {
+        printf("Core %d requesting va DMA transfer from l2_va to l1_va.\n", coreid);
+        pi_cl_dma_copy_t copy_va;
+        copy_va.dir = PI_CL_DMA_DIR_EXT2LOC;       // external to cl memory 
+        copy_va.merge = 0;                         
+        copy_va.size = (uint16_t) BUFFER_SIZE_L2;   
+        copy_va.id = 0;                             
+        copy_va.ext = (uint32_t) L2_va;            
+        copy_va.loc = (uint32_t) L1_va;
+
+        pi_cl_dma_memcpy(&copy_va);
+        pi_cl_dma_wait(&copy_va);
+        printf("Core %d : va Transfer done.\n", coreid);
+
+
+        printf("Core %d requesting vb DMA transfer from l2_vb to l1_vb.\n", coreid);
+        pi_cl_dma_copy_t copy_vb;
+        copy_vb.dir = PI_CL_DMA_DIR_EXT2LOC;       // external to cl memory 
+        copy_vb.merge = 0;                         
+        copy_vb.size = (uint16_t) BUFFER_SIZE_L2;   
+        copy_vb.id = 0;                             
+        copy_vb.ext = (uint32_t) L2_vb;            
+        copy_vb.loc = (uint32_t) L1_vb;
+
+        pi_cl_dma_memcpy(&copy_vb);
+        pi_cl_dma_wait(&copy_vb);
+        printf("Core %d : vb Transfer done.\n", coreid);
+    }
+
+    //
+    start = (coreid * ((uint32_t) BUFFER_SIZE_L2  / pi_cl_cluster_nb_cores()));
+    end   = (start - 1 + ((uint32_t) BUFFER_SIZE_L2 / pi_cl_cluster_nb_cores()));
+    // sync
+    pi_cl_team_barrier(0);   
+    // Each core computes on specific portion of buffer.
+    for(uint32_t i = start; i < end; i++){
+        *L1_acc += L1_va[i] * L1_vb[i];
+    }
+    //sync
+    pi_cl_team_barrier(0);
+
+    // Core 0 of cluster initiates DMA transfer from L1 to L2.
+    if (!coreid)
+    {
+        printf("Core %d requesting out DMA transfer from L1_acc to L2_acc.\n", coreid);
+        pi_cl_dma_copy_t copy_acc;
+        copy_acc.dir   = PI_CL_DMA_DIR_LOC2EXT;
+        copy_acc.merge = 0;
+        copy_acc.size  = (uint16_t) BUFFER_SIZE_L2;
+        copy_acc.id    = 0;
+        copy_acc.ext   = (uint32_t)L2_acc;
+        copy_acc.loc   = (uint32_t)L1_acc;
+
+        pi_cl_dma_memcpy(&copy_acc);
+        pi_cl_dma_wait(&copy_acc);
+        printf("Core %d : Transfer done.\n", coreid);
+    }
+}
+
+/************************************************************
 *               Delegate function
-*  In this function we are in the core 0 of cluster
-***************************************************/
+*  In this function we are in the core0(master) of the cluster
+*************************************************************/
 void cluster_delegate(void *arg)
 {
 /*In this function we are in the core 0 of the cluster*/
     unsigned int time;
     uint32_t acc = 0;
     printf("Cluster master core entry\n");
-  /* init ram */
-    struct pi_device ram;           /* ram object */
-    struct pi_hyperram_conf conf;   /* config object */
-    pi_hyperram_conf_init(&conf);
-    pi_open_from_conf(&ram, &conf);
-    if (pi_ram_open(&ram)) {
-    printf("Error ram open !\n");
-    pmsis_exit(-3);
-    }
+
     // vector allocation
-    va  = (signed char *) pmsis_l1_malloc((uint32_t)(V_size * sizeof(signed char)));
-    vb  = (signed char *) pmsis_l1_malloc((uint32_t)(V_size * sizeof(signed char)));
-    out = (uint32_t *)    pmsis_l1_malloc((uint32_t)(sizeof(uint32_t)));
-    if (va == NULL) {
+    signed char *L1_va_t = (signed char *) pmsis_l1_malloc((uint32_t)(V_size * sizeof(signed char)));
+    signed char *L1_vb_t = (signed char *) pmsis_l1_malloc((uint32_t)(V_size * sizeof(signed char)));
+    uint32_t    *L1_out  = (uint32_t *)    pmsis_l1_malloc((uint32_t)(sizeof(uint32_t)));
+    if (L1_va_t == NULL) {
     printf("buff alloc failed v_A!\n");
     pmsis_exit(-1);
     }
-    if (vb == NULL) {
+    if (L1_vb_t == NULL) {
     printf("buff alloc failed v_B !\n");
     pmsis_exit(-1);
     }
-    if (out == NULL) {
+    if (L1_out == NULL) {
     printf("buff alloc failed v_C !\n");
     pmsis_exit(-1);
     }
 
     // init vector
-    init_vec(va, V_size, 0);
-    init_vec(vb, V_size, 2);
-    out = &acc;
+    init_vec(L1_va_t, V_size, 0);
+    init_vec(L1_vb_t, V_size, 2);
+    L1_out = &acc;
 
     printf("init vector\n");
     printf("VA\n");
     //print_vec(va, V_size);
     printf("VB\n");
     //print_vec(vb, V_size);
-    printf("c = %d\n\n\n", *(out));
+    printf("c = %d\n\n\n", *(L1_out));
 
   /*
     Tasks to execute
   */
     printf("Run Task\n");
-    Arg.v_a = va;
-    Arg.v_b = vb;
-    Arg.acc = out;
+    Arg.v_a = L1_va_t;
+    Arg.v_b = L1_vb_t;
+    Arg.acc = L1_out;
     Arg.dim = V_size;
     
     /*pi_cl_team_fork( 1, (void *)dummy, (void *) &Arg);
@@ -257,75 +434,200 @@ void cluster_delegate(void *arg)
 
     printf("Run dot\n");
     pi_cl_team_fork( nb_cores, (void *)dotproduct, (void *) &Arg);
-    printf("acc=%d\n", acc);
+    printf("acc=%d\n", *(L1_out));
 
     acc = 0;
 
     printf("Run dotSIMD\n");
     pi_cl_team_fork( nb_cores, (void *)dotproduct_simd, (void *) &Arg);
-    printf("acc=%d\n", acc);
+    printf("acc=%d\n", *(L1_out));
 }
 
+
+/* FC Entry*/
 int fc_main()
 {
   printf("Entering Fabric Controller\n");
-  uint32_t errors = 0;
-  uint32_t core_id = pi_core_id();
-  uint32_t cluster_id = pi_cluster_id();
-
+  
+  uint32_t errors = 0;    
+  uint32_t core_id = pi_core_id();        // in this point we only have core 0
+  uint32_t cluster_id = pi_cluster_id();  // the cluster ID is 32 per default 
   printf("[cl_id = %d, core_id = %d] Hello World!\n", (int) cluster_id, (int) core_id);
 
-   /* 
-        Set SoC Voltage to 1.2V
-    */
+//Set SoC Voltage to 1.2V
     uint32_t voltage_in_mV = 1200;
     if(pi_pmu_set_voltage(voltage_in_mV, 0)==-1){
         printf("Frequency set failed!\n");
         pmsis_exit(-1);
     }
-
-    /* 
-        Set Cluster Freq at 250 MHz 
-    */
+// Set FC Freq at 250 MHz
     uint32_t fc_freq_in_Hz = 250 * 1000 * 1000;
     pi_freq_set(PI_FREQ_DOMAIN_FC, fc_freq_in_Hz);
     printf("Fabric Controller Frequency %d Hz\n", (int) pi_freq_get(PI_FREQ_DOMAIN_FC));
-    /* 
-        ***** Configure & open cluster ******
-    */
-    struct pi_device cluster_dev   = {0};
-    struct pi_cluster_conf cl_conf = {0};
+
+
+// ******* Alloc buffera L2 ********* 
+// buff com
+  buff_comm = (signed char *)pmsis_l2_malloc((uint32_t)BUFFER_SIZE_L2);
+  if (buff_comm == NULL) {
+  printf("buff alloc failed  buff_comm!\n");
+  pmsis_exit(-1);
+  }
+// L2_va  
+  signed char *L2_va = (signed char *)pmsis_l2_malloc((uint32_t)V_size);
+  if (L2_va == NULL) {
+  printf("buff alloc failed  L2_va!\n");
+  pmsis_exit(-1);
+  }
+// L2_vb 
+  signed char *L2_vb = (signed char *)pmsis_l2_malloc((uint32_t)V_size);
+  if (L2_vb == NULL) {
+  printf("buff alloc failed  L2_vb!\n");
+  pmsis_exit(-1);
+  }
+// L2_acc  
+  uint32_t *L2_acc = (uint32_t *)pmsis_l2_malloc(sizeof(uint32_t));
+  if (L2_acc == NULL) {
+  printf("buff alloc failed  buff_comm!\n");
+  pmsis_exit(-1);
+  }
+#ifdef VERBOSE
+    printf("L2:buff_comm allocated : %d %ld.\n", buff_comm,
+           (uint32_t) V_size * sizeof(signed char));
+#endif
+
+//******  Alloc Buffers L3. *********
+// ram config
+  pi_hyperram_conf_init(&conf);
+  pi_open_from_conf(&ram, &conf);
+  if (pi_ram_open(&ram)) {
+    printf("Error ram open !\n");
+    pmsis_exit(-3);
+  }
+  
+// L3_va
+  if (pi_ram_alloc(&ram, &L3_va, (uint32_t) V_size * sizeof(signed char))) {
+    printf("L3:Ram malloc failed va!\n");
+    pmsis_exit(-4);
+  }
+  else {
+#ifdef VERBOSE
+    printf("L3:Ram allocated : %lx %ld.\n", L3_va,
+           (uint32_t) V_size * sizeof(signed char));
+#endif
+  }
+// L3_vb
+  if (pi_ram_alloc(&ram, &L3_vb, (uint32_t) V_size * sizeof(signed char))) {
+    printf("L3:Ram malloc failed v_b!\n");
+    pmsis_exit(-4);
+  }
+  else {
+#ifdef VERBOSE
+    printf("L3:Ram allocated : %lx %ld.\n", L3_vb,
+           (uint32_t) V_size * sizeof(signed char));
+#endif
+  }
+// L3_out
+  if (pi_ram_alloc(&ram, &L3_out, (uint32_t)sizeof(uint32_t))) {
+    printf("L3:Ram malloc failed out!\n");
+    pmsis_exit(-4);
+  }  
+  else {
+#ifdef VERBOSE
+    printf("L3:Ram allocated : %lx %ld.\n", L3_out,
+           (uint32_t) V_size * sizeof(signed char));
+#endif
+  }
+
+// generate vector L3
+    generate_vector_L3( V_size, L3_va, &ram, buff_comm);
+    print_vector_L3( "va", V_size, L3_va, &ram, buff_comm);
+
+    generate_vector_L3( V_size, L3_vb, &ram, buff_comm);
+    print_vector_L3( "vb", V_size, L3_vb, &ram, buff_comm);
+
+// Copy L3->L2
+uint32_t k;
+for (k = 0; k < V_size; k += 4) {
+      pi_ram_copy(&ram, (uint32_t)L3_va + k, L2_va + k, (uint32_t)BUFFER_SIZE_L2, 1);
+      pi_ram_copy(&ram, (uint32_t)L3_vb + k, L2_vb + k, (uint32_t)BUFFER_SIZE_L2, 1);
+  }
+#ifdef VERBOSE
+/*
+uint32_t r, i, b;
+buff_com_tmp = (signed char *)pmsis_l2_malloc((uint32_t)BUFFER_SIZE_L2);
+for (r = 0; r < (V_size/BUFFER_SIZE_L2); r ++) {
+      k = r * BUFFER_SIZE_L2;
+      pi_ram_read(&ram, (uint32_t)L2_va + k, buff_com_tmp, (uint32_t)BUFFER_SIZE_L2);
+      for( i = 0; i < BUFFER_SIZE_L2; i++){
+          printf("%s[%d,%d] = %d;\n", "va", k, i, buff_com_tmp[i]);
+      }
+  }
+pmsis_l2_malloc_free(buff_com_tmp, (uint32_t)BUFFER_SIZE_L2);
+*/
+int i;
+for( i = 0; i < V_size; i++){
+          printf("%s[%d] = %d;\t%s[%d] = %d;\n",
+                 "va", i, L2_va[i], "vb", i, L2_vb[i]);
+      }
+#endif
+
+/****** Configure & open cluster *******/
+    struct pi_device cluster_dev;
+    struct pi_cluster_conf cl_conf;
 
     // Init cluster configuration structure.
     pi_cluster_conf_init(&cl_conf);
-    cl_conf.id = 0;                             /* Set cluster ID. */
+    cl_conf.id = 0; // Set cluster ID
     pi_open_from_conf(&cluster_dev, &cl_conf);
     if (pi_cluster_open(&cluster_dev))
     {
         printf("Cluster open failed !\n");
         pmsis_exit(-1);
     }
-
-    /* 
-        Set the max freq for the cluster @1.2V
-    */
+    //   Set the max freq for the cluster @1.2V
     uint32_t cl_freq_in_Hz = 175 * 1000 * 1000;
     pi_freq_set(PI_FREQ_DOMAIN_CL, cl_freq_in_Hz);
     printf("Cluster Frequency %d Hz\n", (int) pi_freq_get(PI_FREQ_DOMAIN_CL));
 
-    /* 
-        Prepare cluster task and send it to cluster. 
-    */
-    struct pi_cluster_task cl_task = {0};
-    cl_task.entry = cluster_delegate;
-    cl_task.arg = NULL;
-    // send task to cluster someone need odentifier 
-    pi_cluster_send_task_to_cl(&cluster_dev, &cl_task);
-    pi_cluster_close(&cluster_dev);
+// alloc L1 buffers 
 
-    // Terminate and exit the test
-    printf("Test success !\n");
-    pmsis_exit(errors);
+// L1_va
+signed char *L1_va = pi_cl_l1_malloc(&cluster_dev, V_size);
+if (L1_va == NULL)
+{
+  printf("L1_va alloc failed !\n");
+  pi_cluster_close(&cluster_dev);
+  pmsis_exit(-4);
+}
+// L1_va
+signed char *L1_vb = pi_cl_l1_malloc(&cluster_dev, V_size);
+if (L1_vb == NULL)
+{
+  printf("L1_vb alloc failed !\n");
+  pi_cluster_close(&cluster_dev);
+  pmsis_exit(-4);
+}
+// L1_acc
+signed char *L1_acc = pi_cl_l1_malloc(&cluster_dev, sizeof(uint32_t));
+if (L1_va == NULL)
+{
+  printf("L1_acc alloc failed !\n");
+  pi_cluster_close(&cluster_dev);
+  pmsis_exit(-4);
+}
+
+
+// Prepare cluster task and send it to cluster. 
+struct pi_cluster_task cl_task = {0};
+cl_task.entry = cluster_delegate;
+cl_task.arg = NULL;
+// send task to cluster someone need odentifier 
+pi_cluster_send_task_to_cl(&cluster_dev, &cl_task);
+pi_cluster_close(&cluster_dev);
+// Terminate and exit the test
+printf("Test success !\n");
+pmsis_exit(errors);
 
   /*
   unsigned int acc = 0;

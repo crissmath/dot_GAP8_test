@@ -1,7 +1,7 @@
 import numpy as np
 
 
-n   = 16384
+n   = 24
 off = 2
 #v_a = list(range(0,n))
 #v_b = list(range(0,n))
