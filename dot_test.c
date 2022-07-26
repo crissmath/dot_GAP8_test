@@ -220,7 +220,7 @@ void dummy( dot_arg_t *Arg){
 /***************************************
 *    Generate vector L3
 *****************************************/
-void generate_vector_L3( uint32_t n, signed char *V,
+void generate_vector_L3( uint32_t n, uint8_t off, signed char *V,
                          struct pi_device *ram, signed char *buff_com) {
 #ifdef VERBOSE
   printf("start generate...\n");
@@ -237,7 +237,8 @@ void generate_vector_L3( uint32_t n, signed char *V,
   for (b = 0; b < ncp; b++) {
     base = b * BUFFER_SIZE_L2;
     for (i = 0; i < BUFFER_SIZE_L2; i++) {
-      buff_com[i] = (signed char)((b * 2 + i % 4) - 1);
+      //buff_com[i] = (signed char)((b * 2 + i % 4) - 1);
+      buff_com[i] = (signed char)(1)+off;
 #ifdef VERBOSE
   printf("buff_comm[%i]: %d \n", i, buff_com[i]);
 #endif
@@ -387,11 +388,10 @@ void cluster_delegate(void *arg)
     unsigned int time;
     uint32_t acc = 0;
     printf("Cluster master core entry\n");
-
-    // vector allocation
-    signed char *L1_va_t = (signed char *) pmsis_l1_malloc((uint32_t)(V_size * sizeof(signed char)));
-    signed char *L1_vb_t = (signed char *) pmsis_l1_malloc((uint32_t)(V_size * sizeof(signed char)));
-    uint32_t    *L1_out  = (uint32_t *)    pmsis_l1_malloc((uint32_t)(sizeof(uint32_t)));
+    /* vector allocation
+    signed char *L1_va  = (signed char *) pmsis_l1_malloc((uint32_t)(V_size * sizeof(signed char)));
+    signed char *L1_vb  = (signed char *) pmsis_l1_malloc((uint32_t)(V_size * sizeof(signed char)));
+    uint32_t    *L1_out = (uint32_t *)    pmsis_l1_malloc((uint32_t)(sizeof(uint32_t)));
     if (L1_va_t == NULL) {
     printf("buff alloc failed v_A!\n");
     pmsis_exit(-1);
@@ -403,28 +403,28 @@ void cluster_delegate(void *arg)
     if (L1_out == NULL) {
     printf("buff alloc failed v_C !\n");
     pmsis_exit(-1);
-    }
+    }*/
 
     // init vector
-    init_vec(L1_va_t, V_size, 0);
-    init_vec(L1_vb_t, V_size, 2);
-    L1_out = &acc;
+    //init_vec(L1_va_t, V_size, 0);
+    //init_vec(L1_vb_t, V_size, 2);
+    //L1_out = &acc;
 
     printf("init vector\n");
     printf("VA\n");
     //print_vec(va, V_size);
     printf("VB\n");
     //print_vec(vb, V_size);
-    printf("c = %d\n\n\n", *(L1_out));
+    //printf("c = %d\n\n\n", *(L1_out));
 
   /*
     Tasks to execute
   */
     printf("Run Task\n");
-    Arg.v_a = L1_va_t;
-    Arg.v_b = L1_vb_t;
-    Arg.acc = L1_out;
-    Arg.dim = V_size;
+    //Arg.v_a = L1_va_t;
+    //Arg.v_b = L1_vb_t;
+    //Arg.acc = L1_out;
+    //Arg.dim = V_size;
     
     /*pi_cl_team_fork( 1, (void *)dummy, (void *) &Arg);
     printf("acc=%d\n", acc);*/
@@ -432,15 +432,15 @@ void cluster_delegate(void *arg)
     //uint nb_cores = pi_cl_cluster_nb_cores();
     uint nb_cores = 1;
 
-    printf("Run dot\n");
-    pi_cl_team_fork( nb_cores, (void *)dotproduct, (void *) &Arg);
-    printf("acc=%d\n", *(L1_out));
+    printf("Run Test DMA\n");
+    pi_cl_team_fork( nb_cores, (void *)cluster_dma, (void *) &Arg);
+    //printf("acc=%d\n", *(L1_out));
 
-    acc = 0;
+    //acc = 0;
 
-    printf("Run dotSIMD\n");
-    pi_cl_team_fork( nb_cores, (void *)dotproduct_simd, (void *) &Arg);
-    printf("acc=%d\n", *(L1_out));
+    //printf("Run dotSIMD\n");
+    //pi_cl_team_fork( nb_cores, (void *)dotproduct_simd, (void *) &Arg);
+    //printf("acc=%d\n", *(L1_out));
 }
 
 
@@ -540,10 +540,10 @@ int fc_main()
   }
 
 // generate vector L3
-    generate_vector_L3( V_size, L3_va, &ram, buff_comm);
+    generate_vector_L3( V_size, 1, L3_va, &ram, buff_comm);
     print_vector_L3( "va", V_size, L3_va, &ram, buff_comm);
 
-    generate_vector_L3( V_size, L3_vb, &ram, buff_comm);
+    generate_vector_L3( V_size, 2, L3_vb, &ram, buff_comm);
     print_vector_L3( "vb", V_size, L3_vb, &ram, buff_comm);
 
 // Copy L3->L2
@@ -609,7 +609,7 @@ if (L1_vb == NULL)
   pmsis_exit(-4);
 }
 // L1_acc
-signed char *L1_acc = pi_cl_l1_malloc(&cluster_dev, sizeof(uint32_t));
+uint32_t *L1_acc = pi_cl_l1_malloc(&cluster_dev, sizeof(uint32_t));
 if (L1_va == NULL)
 {
   printf("L1_acc alloc failed !\n");
@@ -617,6 +617,15 @@ if (L1_va == NULL)
   pmsis_exit(-4);
 }
 
+
+// Init cl_Arg
+cl_Arg.L2_va  = L2_va;
+cl_Arg.L2_vb  = L2_vb;
+cl_Arg.L1_va  = L1_va;
+cl_Arg.L1_va  = L1_vb;
+cl_Arg.L2_acc = L2_acc;
+cl_Arg.L1_acc = L1_acc;
+cl_Arg.dim    = V_size;
 
 // Prepare cluster task and send it to cluster. 
 struct pi_cluster_task cl_task = {0};
