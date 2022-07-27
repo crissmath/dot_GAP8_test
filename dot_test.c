@@ -8,7 +8,7 @@
 #include "bsp/ram.h"
 #include "bsp/ram/hyperram.h"
 
-//#define VERBOSE
+#define VERBOSE
 #define V_size 24             // vector size
 #define BUFFER_SIZE_L2 (8)    // buffer size
 
@@ -316,18 +316,19 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
     uint32_t      N     = cl_Arg->dim;
 
     uint32_t coreid = pi_core_id(), start = 0, end = 0;
-
+    uint32_t acc_d = 0;
+    L1_acc = &acc_d;
     //Core0(master) of cluster init DMA transfer L2->L1.
     if (!coreid)
     {
         printf("Core %d requesting va DMA transfer from l2_va to l1_va.\n", coreid);
         pi_cl_dma_copy_t copy_va;
-        copy_va.dir = PI_CL_DMA_DIR_EXT2LOC;       // external to cl memory 
-        copy_va.merge = 0;                         
-        copy_va.size = (uint16_t) BUFFER_SIZE_L2;   
-        copy_va.id = 0;                             
-        copy_va.ext = (uint32_t) L2_va;            
-        copy_va.loc = (uint32_t) L1_va;
+        copy_va.dir     = PI_CL_DMA_DIR_EXT2LOC;       // external to cl memory 
+        copy_va.merge   = 0;                         
+        copy_va.size    = (uint32_t) BUFFER_SIZE_L2;   
+        copy_va.id      = 0;                             
+        copy_va.ext     = (uint32_t) L2_va;            
+        copy_va.loc     = (uint32_t) L1_va;
 
         pi_cl_dma_memcpy(&copy_va);
         pi_cl_dma_wait(&copy_va);
@@ -336,26 +337,32 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
 
         printf("Core %d requesting vb DMA transfer from l2_vb to l1_vb.\n", coreid);
         pi_cl_dma_copy_t copy_vb;
-        copy_vb.dir = PI_CL_DMA_DIR_EXT2LOC;       // external to cl memory 
+        copy_vb.dir   = PI_CL_DMA_DIR_EXT2LOC;       // external to cl memory 
         copy_vb.merge = 0;                         
-        copy_vb.size = (uint16_t) BUFFER_SIZE_L2;   
-        copy_vb.id = 0;                             
-        copy_vb.ext = (uint32_t) L2_vb;            
-        copy_vb.loc = (uint32_t) L1_vb;
+        copy_vb.size  = (uint32_t) BUFFER_SIZE_L2;   
+        copy_vb.id    = 0;                             
+        copy_vb.ext   = (uint32_t) L2_vb;            
+        copy_vb.loc   = (uint32_t) L1_vb;
 
         pi_cl_dma_memcpy(&copy_vb);
         pi_cl_dma_wait(&copy_vb);
         printf("Core %d : vb Transfer done.\n", coreid);
     }
-
-    //
-    start = (coreid * ((uint32_t) BUFFER_SIZE_L2  / pi_cl_cluster_nb_cores()));
-    end   = (start - 1 + ((uint32_t) BUFFER_SIZE_L2 / pi_cl_cluster_nb_cores()));
+    //start = (coreid * ((uint32_t) BUFFER_SIZE_L2  / pi_cl_cluster_nb_cores()));
+    //end   = (start - 1 + ((uint32_t) BUFFER_SIZE_L2 / pi_cl_cluster_nb_cores()));
     // sync
-    pi_cl_team_barrier(0);   
+    pi_cl_team_barrier(0);
+
     // Each core computes on specific portion of buffer.
-    for(uint32_t i = start; i < end; i++){
-        *L1_acc += L1_va[i] * L1_vb[i];
+    if( !coreid ){
+    printf("L1_acc = %d\n", *L1_acc);
+    for(uint32_t i = 0 ; i < N; i++){
+       //printf("Core %d : computing...\n", coreid);
+       // printf("%s[%d] = %d;\t%s[%d] = %d;\n","L2_va", i, L2_va[i], "L2_vb", i, L2_vb[i]);
+        *L1_acc += (uint32_t)(L1_va[i] * L1_vb[i]);
+      //printf("L1_acc = %d\n", *L1_acc); 
+      }
+      printf("L1_acc = %d\n", *L1_acc);
     }
     //sync
     pi_cl_team_barrier(0);
@@ -367,7 +374,7 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
         pi_cl_dma_copy_t copy_acc;
         copy_acc.dir   = PI_CL_DMA_DIR_LOC2EXT;
         copy_acc.merge = 0;
-        copy_acc.size  = (uint16_t) BUFFER_SIZE_L2;
+        copy_acc.size  = (uint32_t) BUFFER_SIZE_L2;
         copy_acc.id    = 0;
         copy_acc.ext   = (uint32_t)L2_acc;
         copy_acc.loc   = (uint32_t)L1_acc;
@@ -376,6 +383,7 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
         pi_cl_dma_wait(&copy_acc);
         printf("Core %d : Transfer done.\n", coreid);
     }
+     pi_cl_team_barrier(0);
 }
 
 /************************************************************
@@ -410,10 +418,10 @@ void cluster_delegate(void *arg)
     //init_vec(L1_vb_t, V_size, 2);
     //L1_out = &acc;
 
-    printf("init vector\n");
-    printf("VA\n");
+    //printf("init vector\n");
+    //printf("VA\n");
     //print_vec(va, V_size);
-    printf("VB\n");
+    //printf("VB\n");
     //print_vec(vb, V_size);
     //printf("c = %d\n\n\n", *(L1_out));
 
@@ -425,16 +433,16 @@ void cluster_delegate(void *arg)
     //Arg.v_b = L1_vb_t;
     //Arg.acc = L1_out;
     //Arg.dim = V_size;
-    
     /*pi_cl_team_fork( 1, (void *)dummy, (void *) &Arg);
     printf("acc=%d\n", acc);*/
 
-    //uint nb_cores = pi_cl_cluster_nb_cores();
-    uint nb_cores = 1;
+    uint nb_cores = pi_cl_cluster_nb_cores();
+    //uint nb_cores = 1;
 
     printf("Run Test DMA\n");
-    pi_cl_team_fork( nb_cores, (void *)cluster_dma, (void *) &Arg);
-    //printf("acc=%d\n", *(L1_out));
+    pi_cl_team_fork( nb_cores, (void *)cluster_dma, arg);
+    
+    //printf("acc=%d\n", *L1_acc);
 
     //acc = 0;
 
@@ -464,7 +472,6 @@ int fc_main()
     uint32_t fc_freq_in_Hz = 250 * 1000 * 1000;
     pi_freq_set(PI_FREQ_DOMAIN_FC, fc_freq_in_Hz);
     printf("Fabric Controller Frequency %d Hz\n", (int) pi_freq_get(PI_FREQ_DOMAIN_FC));
-
 
 // ******* Alloc buffera L2 ********* 
 // buff com
@@ -541,17 +548,20 @@ int fc_main()
 
 // generate vector L3
     generate_vector_L3( V_size, 1, L3_va, &ram, buff_comm);
-    print_vector_L3( "va", V_size, L3_va, &ram, buff_comm);
+    //print_vector_L3( "va", V_size, L3_va, &ram, buff_comm);
 
     generate_vector_L3( V_size, 2, L3_vb, &ram, buff_comm);
-    print_vector_L3( "vb", V_size, L3_vb, &ram, buff_comm);
+    //print_vector_L3( "vb", V_size, L3_vb, &ram, buff_comm);
 
 // Copy L3->L2
+printf("start: Copy L3->L2\n");
 uint32_t k;
-for (k = 0; k < V_size; k += 4) {
+for (k = 0; k < V_size; k += BUFFER_SIZE_L2) {
       pi_ram_copy(&ram, (uint32_t)L3_va + k, L2_va + k, (uint32_t)BUFFER_SIZE_L2, 1);
       pi_ram_copy(&ram, (uint32_t)L3_vb + k, L2_vb + k, (uint32_t)BUFFER_SIZE_L2, 1);
   }
+
+
 #ifdef VERBOSE
 /*
 uint32_t r, i, b;
@@ -566,34 +576,42 @@ for (r = 0; r < (V_size/BUFFER_SIZE_L2); r ++) {
 pmsis_l2_malloc_free(buff_com_tmp, (uint32_t)BUFFER_SIZE_L2);
 */
 int i;
+uint32_t *out;
+uint32_t dot = 0;
+out = &dot;
+
 for( i = 0; i < V_size; i++){
           printf("%s[%d] = %d;\t%s[%d] = %d;\n",
-                 "va", i, L2_va[i], "vb", i, L2_vb[i]);
+                 "L2_va", i, L2_va[i], "L2_vb", i, L2_vb[i]);
+      *out +=  L2_va[i] * L2_vb[i];
       }
 #endif
+printf("out=%d\n", *out);
+printf("done: Copy L3->L2\n");
+
 
 /****** Configure & open cluster *******/
-    struct pi_device cluster_dev;
-    struct pi_cluster_conf cl_conf;
+struct pi_device cluster_dev;
+struct pi_cluster_conf cl_conf;
 
-    // Init cluster configuration structure.
-    pi_cluster_conf_init(&cl_conf);
-    cl_conf.id = 0; // Set cluster ID
-    pi_open_from_conf(&cluster_dev, &cl_conf);
-    if (pi_cluster_open(&cluster_dev))
-    {
-        printf("Cluster open failed !\n");
-        pmsis_exit(-1);
+// Init cluster configuration structure.
+pi_cluster_conf_init(&cl_conf);
+pi_open_from_conf(&cluster_dev, (void *)&cl_conf);
+if (pi_cluster_open(&cluster_dev)){
+    printf("Cluster open failed !\n");
+    pmsis_exit(-1);
     }
-    //   Set the max freq for the cluster @1.2V
-    uint32_t cl_freq_in_Hz = 175 * 1000 * 1000;
-    pi_freq_set(PI_FREQ_DOMAIN_CL, cl_freq_in_Hz);
-    printf("Cluster Frequency %d Hz\n", (int) pi_freq_get(PI_FREQ_DOMAIN_CL));
 
-// alloc L1 buffers 
+// Set the max freq for the cluster @1.2V
+uint32_t cl_freq_in_Hz = 175 * 1000 * 1000;
+pi_freq_set(PI_FREQ_DOMAIN_CL, cl_freq_in_Hz);
+printf("Cluster Frequency %d Hz\n", (int) pi_freq_get(PI_FREQ_DOMAIN_CL));
 
+
+// --------------- alloc L1 buffers---------------------------- 
+printf("start: L1 allocs\n");
 // L1_va
-signed char *L1_va = pi_cl_l1_malloc(&cluster_dev, V_size);
+signed char *L1_va = pmsis_l1_malloc((uint32_t)V_size);
 if (L1_va == NULL)
 {
   printf("L1_va alloc failed !\n");
@@ -601,7 +619,7 @@ if (L1_va == NULL)
   pmsis_exit(-4);
 }
 // L1_va
-signed char *L1_vb = pi_cl_l1_malloc(&cluster_dev, V_size);
+signed char *L1_vb = pmsis_l1_malloc((uint32_t)V_size);
 if (L1_vb == NULL)
 {
   printf("L1_vb alloc failed !\n");
@@ -609,16 +627,19 @@ if (L1_vb == NULL)
   pmsis_exit(-4);
 }
 // L1_acc
-uint32_t *L1_acc = pi_cl_l1_malloc(&cluster_dev, sizeof(uint32_t));
+uint32_t *L1_acc = pmsis_l1_malloc(sizeof(uint32_t));
 if (L1_va == NULL)
 {
   printf("L1_acc alloc failed !\n");
   pi_cluster_close(&cluster_dev);
   pmsis_exit(-4);
 }
+printf("done: L1 allocs\n");
+//--------- init cl_Arg ---------------------
+uint32_t acc = 0;
+L2_acc = &acc;
+printf("L2_acc = %d\n", *L2_acc);
 
-
-// Init cl_Arg
 cl_Arg.L2_va  = L2_va;
 cl_Arg.L2_vb  = L2_vb;
 cl_Arg.L1_va  = L1_va;
@@ -626,16 +647,39 @@ cl_Arg.L1_va  = L1_vb;
 cl_Arg.L2_acc = L2_acc;
 cl_Arg.L1_acc = L1_acc;
 cl_Arg.dim    = V_size;
-
-// Prepare cluster task and send it to cluster. 
+//------- Task setup --------------------------- 
 struct pi_cluster_task cl_task = {0};
-cl_task.entry = cluster_delegate;
-cl_task.arg = NULL;
+//memset(cl_task, 0, sizeof(struct pi_cluster_task));
+cl_task.entry  = cluster_delegate;
+cl_task.arg    = (void*)&cl_Arg;
+//struct pi_cluster_task cl_task = {0};
+//cl_task.entry = cluster_delegate;
+//cl_task.arg = NULL;
+
+
 // send task to cluster someone need odentifier 
 pi_cluster_send_task_to_cl(&cluster_dev, &cl_task);
-pi_cluster_close(&cluster_dev);
+
+
+// Free L1 memory
+//pi_l2_free(cl_task, sizeof(struct pi_cluster_task));
+pi_cl_l1_free(&cluster_dev, L1_va , V_size);
+pi_cl_l1_free(&cluster_dev, L1_vb , V_size);
+pi_cl_l1_free(&cluster_dev, L1_acc, sizeof(uint32_t));
+
+//printf("Close cluster after end of computation.\n");
+//pi_cluster_close(&cluster_dev);
+
+printf("L2_acc = %d\n", *L2_acc);
+
+// Free L2 memory
+//pi_l2_free(cl_task, sizeof(struct pi_cluster_task));
+pi_l2_free(L2_va , V_size);
+pi_l2_free(L2_vb , V_size);
+pi_l2_free(L2_acc, sizeof(uint32_t));
+
 // Terminate and exit the test
-printf("Test success !\n");
+printf("Test done !\n");
 pmsis_exit(errors);
 
   /*

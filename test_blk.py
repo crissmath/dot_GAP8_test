@@ -1,12 +1,13 @@
 import numpy as np
 
 n   = 24
-off = 1
+off_1 = 1
+off_2 = 2
 #v_a = list(range(0,n))
 #v_b = list(range(0,n))
 
-v_a = np.ones(n)+off
-v_b = np.ones(n)+off
+v_a = np.ones(n)+off_1
+v_b = np.ones(n)+off_2
 
 v_anp = np.array(v_a)
 v_bnp = np.array(v_b)
