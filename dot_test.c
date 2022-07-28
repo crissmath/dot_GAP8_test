@@ -216,7 +216,6 @@ void dummy( dot_arg_t *Arg){
     }
     pi_cl_team_barrier();
 }
-
 /***************************************
 *    Generate vector L3
 *****************************************/
@@ -316,19 +315,19 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
     uint32_t      N     = cl_Arg->dim;
 
     uint32_t coreid = pi_core_id(), start = 0, end = 0;
-    uint32_t acc_d = 0;
+    int acc_d = 0;
     L1_acc = &acc_d;
     //Core0(master) of cluster init DMA transfer L2->L1.
     if (!coreid)
     {
-        printf("Core %d requesting va DMA transfer from l2_va to l1_va.\n", coreid);
+        printf("Core %d requesting va DMA transfer from l2_va to l1_va. size :%d \n", coreid, sizeof(N));
         pi_cl_dma_copy_t copy_va;
         copy_va.dir     = PI_CL_DMA_DIR_EXT2LOC;       // external to cl memory 
         copy_va.merge   = 0;                         
-        copy_va.size    = (uint32_t) BUFFER_SIZE_L2;   
+        copy_va.size    = N;   
         copy_va.id      = 0;                             
-        copy_va.ext     = (uint32_t) L2_va;            
-        copy_va.loc     = (uint32_t) L1_va;
+        copy_va.ext     = L2_va;            
+        copy_va.loc     = L1_va;
 
         pi_cl_dma_memcpy(&copy_va);
         pi_cl_dma_wait(&copy_va);
@@ -339,10 +338,10 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
         pi_cl_dma_copy_t copy_vb;
         copy_vb.dir   = PI_CL_DMA_DIR_EXT2LOC;       // external to cl memory 
         copy_vb.merge = 0;                         
-        copy_vb.size  = (uint32_t) BUFFER_SIZE_L2;   
+        copy_vb.size  = N;   
         copy_vb.id    = 0;                             
-        copy_vb.ext   = (uint32_t) L2_vb;            
-        copy_vb.loc   = (uint32_t) L1_vb;
+        copy_vb.ext   = L2_vb;            
+        copy_vb.loc   = L1_vb;
 
         pi_cl_dma_memcpy(&copy_vb);
         pi_cl_dma_wait(&copy_vb);
@@ -358,11 +357,13 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
     printf("Core %d: L1_acc = %d\n",coreid, *L1_acc);
     for(uint32_t i = 0 ; i < N; i++){
         printf("Core %d : computing...\n", coreid);
-        printf("Core %d : %s[%d] = %d;\t%s[%d] = %d;\n", coreid, "L2_va", i, L2_va[i], "L2_vb", i, L2_vb[i]);
-        *L1_acc += (uint32_t)(L1_va[i] * L1_vb[i]);
+        printf("size: %d Core: %d %s[%d] = %d;\t%s[%d] = %d;\n",
+                N, coreid, "L1_va", i, L1_va[i], "L1_vb", i, L1_vb[i]);
+        
+        *L1_acc += (L1_va[i] * L1_vb[i]);
         printf("L1_acc = %d\n", *L1_acc); 
       }
-      printf("Core %d : L1_acc = %d\n",coreid, *L1_acc);
+      printf("Core %d : L1_acc = %d, acc_d: %d\n",coreid, *L1_acc, acc_d);
     //}
     //sync
     pi_cl_team_barrier(0);
@@ -374,7 +375,7 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
         pi_cl_dma_copy_t copy_acc;
         copy_acc.dir   = PI_CL_DMA_DIR_LOC2EXT;
         copy_acc.merge = 0;
-        copy_acc.size  = (uint32_t) BUFFER_SIZE_L2;
+        copy_acc.size  = (uint32_t) N;
         copy_acc.id    = 0;
         copy_acc.ext   = (uint32_t)L2_acc;
         copy_acc.loc   = (uint32_t)L1_acc;
@@ -552,7 +553,7 @@ int fc_main()
     generate_vector_L3( V_size, 1, L3_va, &ram, buff_comm);
     //print_vector_L3( "va", V_size, L3_va, &ram, buff_comm);
 
-    generate_vector_L3( V_size, 2, L3_vb, &ram, buff_comm);
+    generate_vector_L3( V_size, 1, L3_vb, &ram, buff_comm);
     //print_vector_L3( "vb", V_size, L3_vb, &ram, buff_comm);
 
 // Copy L3->L2
@@ -561,7 +562,7 @@ uint32_t k;
 for (k = 0; k < V_size; k += BUFFER_SIZE_L2) {
       pi_ram_copy(&ram, (uint32_t)L3_va + k, L2_va + k, (uint32_t)BUFFER_SIZE_L2, 1);
       pi_ram_copy(&ram, (uint32_t)L3_vb + k, L2_vb + k, (uint32_t)BUFFER_SIZE_L2, 1);
-  }
+}
 
 
 #ifdef VERBOSE
@@ -579,17 +580,17 @@ pmsis_l2_malloc_free(buff_com_tmp, (uint32_t)BUFFER_SIZE_L2);
 */
 int i;
 uint32_t *out;
-uint32_t dot = 0;
-out = &dot;
+uint32_t  dot = 0;
+*out = &dot;
 
 for( i = 0; i < V_size; i++){
           printf("%s[%d] = %d;\t%s[%d] = %d;\n",
                  "L2_va", i, L2_va[i], "L2_vb", i, L2_vb[i]);
       *out +=  L2_va[i] * L2_vb[i];
       }
-#endif
 printf("out=%d\n", *out);
 printf("done: Copy L3->L2\n");
+#endif
 
 
 /****** Configure & open cluster *******/
@@ -659,7 +660,8 @@ cl_task.arg    = (void*)&cl_Arg;
 //cl_task.arg = NULL;
 
 
-// send task to cluster someone need odentifier 
+// send task to cluster
+
 pi_cluster_send_task_to_cl(&cluster_dev, &cl_task);
 
 
