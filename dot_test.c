@@ -354,16 +354,16 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
     pi_cl_team_barrier(0);
 
     // Each core computes on specific portion of buffer.
-    if( !coreid ){
-    printf("L1_acc = %d\n", *L1_acc);
+    //if( !coreid ){
+    printf("Core %d: L1_acc = %d\n",coreid, *L1_acc);
     for(uint32_t i = 0 ; i < N; i++){
-       //printf("Core %d : computing...\n", coreid);
-       // printf("%s[%d] = %d;\t%s[%d] = %d;\n","L2_va", i, L2_va[i], "L2_vb", i, L2_vb[i]);
+        printf("Core %d : computing...\n", coreid);
+        printf("Core %d : %s[%d] = %d;\t%s[%d] = %d;\n", coreid, "L2_va", i, L2_va[i], "L2_vb", i, L2_vb[i]);
         *L1_acc += (uint32_t)(L1_va[i] * L1_vb[i]);
-      //printf("L1_acc = %d\n", *L1_acc); 
+        printf("L1_acc = %d\n", *L1_acc); 
       }
-      printf("L1_acc = %d\n", *L1_acc);
-    }
+      printf("Core %d : L1_acc = %d\n",coreid, *L1_acc);
+    //}
     //sync
     pi_cl_team_barrier(0);
 
@@ -389,12 +389,13 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
 /************************************************************
 *               Delegate function
 *  In this function we are in the core0(master) of the cluster
+*  The cluster controller is core 0 of the cluster.
+*  Core 1 to 7 are the slave cores.
 *************************************************************/
 void cluster_delegate(void *arg)
 {
 /*In this function we are in the core 0 of the cluster*/
     unsigned int time;
-    uint32_t acc = 0;
     printf("Cluster master core entry\n");
     /* vector allocation
     signed char *L1_va  = (signed char *) pmsis_l1_malloc((uint32_t)(V_size * sizeof(signed char)));
@@ -436,8 +437,9 @@ void cluster_delegate(void *arg)
     /*pi_cl_team_fork( 1, (void *)dummy, (void *) &Arg);
     printf("acc=%d\n", acc);*/
 
-    uint nb_cores = pi_cl_cluster_nb_cores();
-    //uint nb_cores = 1;
+
+    //uint nb_cores = pi_cl_cluster_nb_cores();
+    uint nb_cores = 1;
 
     printf("Run Test DMA\n");
     pi_cl_team_fork( nb_cores, (void *)cluster_dma, arg);
