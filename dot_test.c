@@ -8,8 +8,8 @@
 #include "bsp/ram.h"
 #include "bsp/ram/hyperram.h"
 
-#define VERBOSE
-#define V_size 24             // vector size
+//#define VERBOSE
+#define V_size 16             // vector size
 #define BUFFER_SIZE_L2 (8)    // buffer size
 
 // Com Buffers 
@@ -231,12 +231,12 @@ void generate_vector_L3( uint32_t n, uint8_t off, signed char *V,
   // last part of vector 
   resto = (uint32_t)(n * sizeof(unsigned char)) % BUFFER_SIZE_L2;
 #ifdef VERBOSE
-  printf("number of cp resto : %d %d\n", ncp, resto);
+  printf("number of cp = %d, resto = %d\n", ncp, resto);
 #endif
   for (b = 0; b < ncp; b++) {
     base = b * BUFFER_SIZE_L2;
     for (i = 0; i < BUFFER_SIZE_L2; i++) {
-      //buff_com[i] = (signed char)((b * 2 + i % 4) - 1);
+       //buff_com[i] = (signed char)((b * 2 + i % 4) - 1);
       buff_com[i] = (signed char)(1)+off;
 #ifdef VERBOSE
   printf("buff_comm[%i]: %d \n", i, buff_com[i]);
@@ -315,9 +315,10 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
     uint32_t      N     = cl_Arg->dim;
 
     uint32_t coreid = pi_core_id(), start = 0, end = 0;
-    int acc_d = 0;
+    uint32_t acc_d = 0;
     L1_acc = &acc_d;
     //Core0(master) of cluster init DMA transfer L2->L1.
+    // help : https://github.com/pulp-platform/dory/blob/6fc01a87d593d8f633651e13c773a9bbb0740153/dory/Hardware_targets/GAP8/GAP8_board/Templates/layer_templates/layer_template_conv_1D.c
     if (!coreid)
     {
         printf("Core %d requesting va DMA transfer from l2_va to l1_va. size :%d \n", coreid, sizeof(N));
@@ -326,27 +327,31 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
         copy_va.merge   = 0;                         
         copy_va.size    = N;   
         copy_va.id      = 0;                             
-        copy_va.ext     = L2_va;            
-        copy_va.loc     = L1_va;
-
+        copy_va.ext     = (uint32_t) L2_va;            
+        copy_va.loc     = (uint32_t) L1_va;
         pi_cl_dma_memcpy(&copy_va);
-        pi_cl_dma_wait(&copy_va);
         printf("Core %d : va Transfer done.\n", coreid);
-
-
+        for(int i = 0; i < N; i++){
+          printf("L1_va[%d] = %d\n", i, L1_va[i]);
+        }
+        // copy vb L2->L1
         printf("Core %d requesting vb DMA transfer from l2_vb to l1_vb.\n", coreid);
         pi_cl_dma_copy_t copy_vb;
-        copy_vb.dir   = PI_CL_DMA_DIR_EXT2LOC;       // external to cl memory 
-        copy_vb.merge = 0;                         
-        copy_vb.size  = N;   
-        copy_vb.id    = 0;                             
-        copy_vb.ext   = L2_vb;            
-        copy_vb.loc   = L1_vb;
-
+        copy_vb.dir     = PI_CL_DMA_DIR_EXT2LOC;       // external to cl memory 
+        copy_vb.merge   = 0;                         
+        copy_vb.size    = N;   
+        copy_vb.id      = 0;                             
+        copy_vb.ext     = (uint32_t) L2_vb;            
+        copy_vb.loc     = (uint32_t) L1_vb;
         pi_cl_dma_memcpy(&copy_vb);
+        pi_cl_dma_wait(&copy_va);
         pi_cl_dma_wait(&copy_vb);
         printf("Core %d : vb Transfer done.\n", coreid);
+        for(int i = 0; i < N; i++){
+          printf("L1_vb[%d] = %d\n", i, L1_vb[i]);
+        }
     }
+
     //start = (coreid * ((uint32_t) BUFFER_SIZE_L2  / pi_cl_cluster_nb_cores()));
     //end   = (start - 1 + ((uint32_t) BUFFER_SIZE_L2 / pi_cl_cluster_nb_cores()));
     // sync
@@ -376,15 +381,16 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
         copy_acc.dir   = PI_CL_DMA_DIR_LOC2EXT;
         copy_acc.merge = 0;
         copy_acc.size  = (uint32_t) N;
-        copy_acc.id    = 0;
-        copy_acc.ext   = (uint32_t)L2_acc;
-        copy_acc.loc   = (uint32_t)L1_acc;
+        copy_acc.id    = 1;
+        copy_acc.ext   = (uint32_t) L2_acc;
+        copy_acc.loc   = (uint32_t) L1_acc;
 
         pi_cl_dma_memcpy(&copy_acc);
         pi_cl_dma_wait(&copy_acc);
         printf("Core %d : Transfer done.\n", coreid);
     }
      pi_cl_team_barrier(0);
+     printf(" DMA TASK done...\n");
 }
 
 /************************************************************
@@ -516,7 +522,7 @@ int fc_main()
   }
   
 // L3_va
-  if (pi_ram_alloc(&ram, &L3_va, (uint32_t) V_size * sizeof(signed char))) {
+  if (pi_ram_alloc(&ram, (uint32_t *)&L3_va, (uint32_t) V_size * sizeof(signed char))) {
     printf("L3:Ram malloc failed va!\n");
     pmsis_exit(-4);
   }
@@ -527,7 +533,7 @@ int fc_main()
 #endif
   }
 // L3_vb
-  if (pi_ram_alloc(&ram, &L3_vb, (uint32_t) V_size * sizeof(signed char))) {
+  if (pi_ram_alloc(&ram, (uint32_t *)&L3_vb, (uint32_t) V_size * sizeof(signed char))) {
     printf("L3:Ram malloc failed v_b!\n");
     pmsis_exit(-4);
   }
@@ -538,7 +544,7 @@ int fc_main()
 #endif
   }
 // L3_out
-  if (pi_ram_alloc(&ram, &L3_out, (uint32_t)sizeof(uint32_t))) {
+  if (pi_ram_alloc(&ram, (uint32_t *)&L3_out, (uint32_t)sizeof(uint32_t))) {
     printf("L3:Ram malloc failed out!\n");
     pmsis_exit(-4);
   }  
@@ -553,7 +559,7 @@ int fc_main()
     generate_vector_L3( V_size, 1, L3_va, &ram, buff_comm);
     //print_vector_L3( "va", V_size, L3_va, &ram, buff_comm);
 
-    generate_vector_L3( V_size, 1, L3_vb, &ram, buff_comm);
+    generate_vector_L3( V_size, 2, L3_vb, &ram, buff_comm);
     //print_vector_L3( "vb", V_size, L3_vb, &ram, buff_comm);
 
 // Copy L3->L2
@@ -563,6 +569,7 @@ for (k = 0; k < V_size; k += BUFFER_SIZE_L2) {
       pi_ram_copy(&ram, (uint32_t)L3_va + k, L2_va + k, (uint32_t)BUFFER_SIZE_L2, 1);
       pi_ram_copy(&ram, (uint32_t)L3_vb + k, L2_vb + k, (uint32_t)BUFFER_SIZE_L2, 1);
 }
+
 
 
 #ifdef VERBOSE
@@ -579,9 +586,9 @@ for (r = 0; r < (V_size/BUFFER_SIZE_L2); r ++) {
 pmsis_l2_malloc_free(buff_com_tmp, (uint32_t)BUFFER_SIZE_L2);
 */
 int i;
-uint32_t *out;
 uint32_t  dot = 0;
-*out = &dot;
+uint32_t *out;
+out = &dot;
 
 for( i = 0; i < V_size; i++){
           printf("%s[%d] = %d;\t%s[%d] = %d;\n",
@@ -642,11 +649,10 @@ printf("done: L1 allocs\n");
 uint32_t acc = 0;
 L2_acc = &acc;
 printf("L2_acc = %d\n", *L2_acc);
-
 cl_Arg.L2_va  = L2_va;
 cl_Arg.L2_vb  = L2_vb;
 cl_Arg.L1_va  = L1_va;
-cl_Arg.L1_va  = L1_vb;
+cl_Arg.L1_vb  = L1_vb;
 cl_Arg.L2_acc = L2_acc;
 cl_Arg.L1_acc = L1_acc;
 cl_Arg.dim    = V_size;
@@ -660,9 +666,20 @@ cl_task.arg    = (void*)&cl_Arg;
 //cl_task.arg = NULL;
 
 
-// send task to cluster
+// ******send task to cluster *******************
 
 pi_cluster_send_task_to_cl(&cluster_dev, &cl_task);
+
+// ************************************************
+
+// Copy L2->L3
+printf("start: Copy L2->L3\n");
+//uint32_t jj;
+//for (jj = 0; jj < V_size; jj += BUFFER_SIZE_L2) {
+// its scalar dont use loop 
+      pi_ram_copy(&ram, (uint32_t)L3_out, L2_acc, (uint32_t)sizeof(uint32_t), 0);
+//}
+printf("done: Copy L2->L3\n");
 
 
 // Free L1 memory

@@ -1,6 +1,5 @@
 import numpy as np
 
-
 n   = 24
 off = 2
 #v_a = list(range(0,n))
