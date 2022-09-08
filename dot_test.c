@@ -9,25 +9,33 @@
 #include "bsp/ram/hyperram.h"
 
 //#define VERBOSE
-#define V_size 16             // vector size
+#define GOLDEN_VALUE 144 
+#define use_simd
+
+#define V_size  24              // vector size
 #define BUFFER_SIZE_L2 (8)    // buffer size
 
-// Com Buffers 
+
+// Comunications Buffers 
 signed char *buff_comm;
 signed char *buff_com_tmp;
 
-/* init ram */
-struct pi_device ram;           /* ram object */
+/*-------- init ram -------------------------------*/
+struct pi_device ram;           /* ram object    */
 struct pi_hyperram_conf conf;   /* config object */
-//
+
+/*------- Buffers in Ram---------------------------*/
 signed char *L3_va;
 signed char *L3_vb;
 uint32_t    *L3_out;
 
+
 // set voltage
 #define pi_pmu_set_voltage(x, y)      ( rt_voltage_force(RT_VOLTAGE_DOMAIN_MAIN, x, NULL) )
 
-// struct for dot product task
+
+
+// struct for dot product task_1
 typedef struct   dot_arg
 {
     signed char  *v_a;
@@ -35,10 +43,10 @@ typedef struct   dot_arg
     uint32_t     *acc;
     uint32_t     dim;
 }dot_arg_t;
-
 dot_arg_t Arg;
 
-// struct for dot product Cluster task
+
+// struct for dot product Cluster task_2
 typedef struct dot_cl_arg{
     signed char * L2_va;
     signed char * L2_vb;
@@ -51,16 +59,30 @@ typedef struct dot_cl_arg{
 
 dot_cl_arg_t cl_Arg;
 
-/***************************************
-*          SIMD DOT 
-****************************************/
-void dotproduct_simd(dot_arg_t *Arg)
+
+/**********************************************************************
+ *                                                                    *  
+ *                        SIMD DOT                                    *
+ *                                                                    *  
+ **********************************************************************/
+/*! \brief This function calculates the dot product, using the SIMD
+ *  instructions present in GAP8 risc-v.
+ *
+ * This function requires struct of Arguments:
+ *  Arg :
+ *        - va 
+ *        - vb 
+ *        - acc
+ *        - dim 
+ **********************************************************************/
+void dotproduct_simd( signed char *vA, signed char *vB, uint32_t *c, uint32_t N)
 {    
+    /*
     signed char *vA    = Arg->v_a;
     signed char *vB    = Arg->v_b;
     uint32_t    *c     = Arg->acc;
     uint32_t     N     = Arg->dim;
-
+  */
     uint i, base = 0;
     float t1, t2;
     unsigned int instr, cycles, ldstall, jrstall, imstall;
@@ -89,7 +111,7 @@ void dotproduct_simd(dot_arg_t *Arg)
                  base, A[base], base+1, A[base+1], base+2, A[base+2], base+3, A[base+3]);
         printf("B[%d] = %u, B[%d] = %u, B[%d] = %u, B[%d] = %u\n",
                  base, B[base], base+1, B[base+1], base+2, B[base+2], base+3, B[base+3]);*/
-        *c = gap8_sumdotpu4(A, B, *c);
+        *c = gap8_sumdotp4(A, B, *c);
         //printf("acc = %d \n", acc);
         //acc += vA[i]*vB[i];
     }
@@ -119,16 +141,30 @@ void dotproduct_simd(dot_arg_t *Arg)
                                 "\n\n", cycles, instr, ldstall, jrstall, imstall);
     pi_cl_team_barrier();
 }
-/***************************************
-*          DOT Product 
-****************************************/
-void dotproduct( dot_arg_t *Arg)
+/**********************************************************************
+ *                                                                    *  
+ *                        DOT product                                 *
+ *                                                                    *  
+ **********************************************************************/
+/*! \brief This function calculates the dot product.
+ *  instructions present in GAP8 risc-v.
+ *
+ * This function requires struct of Arguments:
+ *  Arg :
+ *        - va 
+ *        - vb 
+ *        - acc
+ *        - dim 
+ **********************************************************************/
+
+void dotproduct( signed char *vA, signed char *vB, uint32_t *c, uint32_t N)
 {
+  /*
     signed char *vA    = Arg->v_a;
     signed char *vB    = Arg->v_b;
     uint32_t    *c     = Arg->acc;
     uint32_t     N     = Arg->dim;
-
+*/
     int i;
     unsigned int instr, cycles, ldstall, jrstall, imstall;
 
@@ -198,31 +234,39 @@ void dotproduct( dot_arg_t *Arg)
 /**************************************************
 *               Dummy test
 ***************************************************/
-void dummy( dot_arg_t *Arg){
+void dummy( signed char *va, signed char *vb, uint32_t *c, uint32_t N){
 
-    signed char *a    = Arg->v_a;
-    signed char *b    = Arg->v_b;
-    uint32_t    *c    = Arg->acc;
-    uint32_t     N    = Arg->dim;
-
-    print_vec(a, N);
-    print_vec(b, N);
-    printf(" c = %d\n", *c);
-    printf(" size = %d\n", N);
-
+    //print_vec(va, N);
+    //print_vec(vb, N);
+    //printf(" c = %d\n", *c);
+    //printf(" size = %d\n", N);
     int i;
     for(i = 0; i<N; i++){
-        *c += a[i] * b[i];
+        *c += va[i] * vb[i];
     }
+    printf(" c = %d\n", *c);
     pi_cl_team_barrier();
 }
-/***************************************
-*    Generate vector L3
-*****************************************/
+/**********************************************************************
+ *                                                                    *  
+ *                   Generate vector in L3                            *
+ *                                                                    *  
+ **********************************************************************/
+/*! \brief This function generate a vector in L3. First generate vector
+ *  int L2 and copy vector to L3. 
+ *
+ * This function requires Arguments:
+ *  Arg :
+ *        - n 
+ *        - off 
+ *        - V
+ *        - ram
+ *        - buff_com 
+ **********************************************************************/
 void generate_vector_L3( uint32_t n, uint8_t off, signed char *V,
                          struct pi_device *ram, signed char *buff_com) {
 #ifdef VERBOSE
-  printf("start generate...\n");
+  printf("start: generate vector L3.\n");
 #endif
   static int factor = 1;
   uint32_t b, i, ncp, resto = 0, base = 0;
@@ -253,7 +297,7 @@ void generate_vector_L3( uint32_t n, uint8_t off, signed char *V,
   }
   factor++;
 #ifdef VERBOSE
-  printf("end generate ..\n");
+  printf("done: generate vector L3.\n");
 #endif
 }
 /**********************************************************************
@@ -265,11 +309,16 @@ void generate_vector_L3( uint32_t n, uint8_t off, signed char *V,
  *
  * This function requires the size (n) and the buffer(buffer_com) where the
  * vector is going to be read.
+ *  Arg :
+ *        - n 
+ *        - off 
+ *        - V
+ *        - ram
+ *        - buff_com
  **********************************************************************/
 void print_vector_L3(char *name, uint32_t n, unsigned char *V,
                      struct pi_device *ram, signed char *buff_com) {
-
-  printf("init printmatrix !...\n");
+  printf("start: printvector.\n");
   buff_com = (signed char *)pmsis_l2_malloc((uint32_t)BUFFER_SIZE_L2);
   if (buff_com == NULL) {
     printf("Error allocation buff_comm!\n");
@@ -298,12 +347,26 @@ void print_vector_L3(char *name, uint32_t n, unsigned char *V,
     }
   }
   pmsis_l2_malloc_free(buff_com, (uint32_t)BUFFER_SIZE_L2);
-  printf("fin printmatrix...\n");
+  printf("done: print vector.\n");
 }
-/************************************************************
-*               Dot Cluster DMA  
-*        core0(master) of the cluster
-*************************************************************/
+
+/**********************************************************************
+ *
+ *                   Cluster DMA
+ *                 core 0 : cluster master
+ **********************************************************************/
+/*! \brief This function printed the vector of siz
+ *
+ * This function requires the size (n) and the buffer(buffer_com) where the
+ * vector is going to be read.
+ *  Arg :
+ *        - n 
+ *        - off 
+ *        - V
+ *        - ram
+ *        - buff_com
+ **********************************************************************/
+
 void cluster_dma(dot_cl_arg_t *cl_Arg)
 {
     signed char *L2_va  = cl_Arg->L2_va;
@@ -321,7 +384,7 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
     // help : https://github.com/pulp-platform/dory/blob/6fc01a87d593d8f633651e13c773a9bbb0740153/dory/Hardware_targets/GAP8/GAP8_board/Templates/layer_templates/layer_template_conv_1D.c
     if (!coreid)
     {
-        printf("Core %d requesting va DMA transfer from l2_va to l1_va. size :%d \n", coreid, sizeof(N));
+        printf("Core %d : requesting va DMA transfer from l2_va to l1_va. size :%d \n", coreid, sizeof(N));
         pi_cl_dma_copy_t copy_va;
         copy_va.dir     = PI_CL_DMA_DIR_EXT2LOC;       // external to cl memory 
         copy_va.merge   = 0;                         
@@ -330,12 +393,15 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
         copy_va.ext     = (uint32_t) L2_va;            
         copy_va.loc     = (uint32_t) L1_va;
         pi_cl_dma_memcpy(&copy_va);
+        // add the par parallizate in the cluster. 
         printf("Core %d : va Transfer done.\n", coreid);
+#ifdef VERBOSE
         for(int i = 0; i < N; i++){
           printf("L1_va[%d] = %d\n", i, L1_va[i]);
         }
+#endif
         // copy vb L2->L1
-        printf("Core %d requesting vb DMA transfer from l2_vb to l1_vb.\n", coreid);
+        printf("Core %d : requesting vb DMA transfer from l2_vb to l1_vb.\n", coreid);
         pi_cl_dma_copy_t copy_vb;
         copy_vb.dir     = PI_CL_DMA_DIR_EXT2LOC;       // external to cl memory 
         copy_vb.merge   = 0;                         
@@ -347,9 +413,11 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
         pi_cl_dma_wait(&copy_va);
         pi_cl_dma_wait(&copy_vb);
         printf("Core %d : vb Transfer done.\n", coreid);
+#ifdef VERBOSE
         for(int i = 0; i < N; i++){
           printf("L1_vb[%d] = %d\n", i, L1_vb[i]);
         }
+#endif
     }
 
     //start = (coreid * ((uint32_t) BUFFER_SIZE_L2  / pi_cl_cluster_nb_cores()));
@@ -359,16 +427,38 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
 
     // Each core computes on specific portion of buffer.
     //if( !coreid ){
-    printf("Core %d: L1_acc = %d\n",coreid, *L1_acc);
-    for(uint32_t i = 0 ; i < N; i++){
+    printf("Core %d : L1_acc = %d\n",coreid, *L1_acc);
+
+    //***** Call function **********
+           // choose the function use 
+       #ifdef use_simd
+       dotproduct_simd(L1_va, L1_vb, L1_acc, N);
+       #else
+       #ifdef use_normal
+       printf("Normal\n");
+       dotproduct( L1_va, L1_vb, L1_acc, N);
+       #endif
+       #endif
+
+       if( *L1_acc != GOLDEN_VALUE)
+         printf("dot product is is %d instead of %d\n", *L1_acc, GOLDEN_VALUE);
+       else
+         printf("Nice! Well done! 0 errors\n");
+      
+
+/*    for(uint32_t i = 0 ; i < N; i++){
+#ifdef VERBOSE       
         printf("Core %d : computing...\n", coreid);
         printf("size: %d Core: %d %s[%d] = %d;\t%s[%d] = %d;\n",
                 N, coreid, "L1_va", i, L1_va[i], "L1_vb", i, L1_vb[i]);
-        
+#endif
         *L1_acc += (L1_va[i] * L1_vb[i]);
-        printf("L1_acc = %d\n", *L1_acc); 
+        //printf("L1_acc = %d\n", *L1_acc); 
       }
+*/
+#ifdef VERBOSE
       printf("Core %d : L1_acc = %d, acc_d: %d\n",coreid, *L1_acc, acc_d);
+#endif
     //}
     //sync
     pi_cl_team_barrier(0);
@@ -381,16 +471,15 @@ void cluster_dma(dot_cl_arg_t *cl_Arg)
         copy_acc.dir   = PI_CL_DMA_DIR_LOC2EXT;
         copy_acc.merge = 0;
         copy_acc.size  = (uint32_t) N;
-        copy_acc.id    = 1;
+        copy_acc.id    = 0;
         copy_acc.ext   = (uint32_t) L2_acc;
         copy_acc.loc   = (uint32_t) L1_acc;
-
         pi_cl_dma_memcpy(&copy_acc);
         pi_cl_dma_wait(&copy_acc);
         printf("Core %d : Transfer done.\n", coreid);
     }
      pi_cl_team_barrier(0);
-     printf(" DMA TASK done...\n");
+     printf("done: DMA task.\n");
 }
 
 /************************************************************
@@ -454,7 +543,6 @@ void cluster_delegate(void *arg)
     //printf("acc=%d\n", *L1_acc);
 
     //acc = 0;
-
     //printf("Run dotSIMD\n");
     //pi_cl_team_fork( nb_cores, (void *)dotproduct_simd, (void *) &Arg);
     //printf("acc=%d\n", *(L1_out));
@@ -569,6 +657,8 @@ for (k = 0; k < V_size; k += BUFFER_SIZE_L2) {
       pi_ram_copy(&ram, (uint32_t)L3_va + k, L2_va + k, (uint32_t)BUFFER_SIZE_L2, 1);
       pi_ram_copy(&ram, (uint32_t)L3_vb + k, L2_vb + k, (uint32_t)BUFFER_SIZE_L2, 1);
 }
+printf("done: Copy L3->L2\n");
+
 
 
 
@@ -607,10 +697,11 @@ struct pi_cluster_conf cl_conf;
 // Init cluster configuration structure.
 pi_cluster_conf_init(&cl_conf);
 pi_open_from_conf(&cluster_dev, (void *)&cl_conf);
-if (pi_cluster_open(&cluster_dev)){
+if (pi_cluster_open(&cluster_dev))
+{
     printf("Cluster open failed !\n");
     pmsis_exit(-1);
-    }
+}
 
 // Set the max freq for the cluster @1.2V
 uint32_t cl_freq_in_Hz = 175 * 1000 * 1000;
@@ -672,7 +763,7 @@ pi_cluster_send_task_to_cl(&cluster_dev, &cl_task);
 
 // ************************************************
 
-// Copy L2->L3
+//----------------------Copy L2->L3 ----------------------
 printf("start: Copy L2->L3\n");
 //uint32_t jj;
 //for (jj = 0; jj < V_size; jj += BUFFER_SIZE_L2) {
@@ -681,17 +772,21 @@ printf("start: Copy L2->L3\n");
 //}
 printf("done: Copy L2->L3\n");
 
-
 // Free L1 memory
 //pi_l2_free(cl_task, sizeof(struct pi_cluster_task));
 pi_cl_l1_free(&cluster_dev, L1_va , V_size);
 pi_cl_l1_free(&cluster_dev, L1_vb , V_size);
 pi_cl_l1_free(&cluster_dev, L1_acc, sizeof(uint32_t));
 
-//printf("Close cluster after end of computation.\n");
-//pi_cluster_close(&cluster_dev);
+printf("Close cluster after end of computation.\n");
+pi_cluster_close(&cluster_dev);
 
 printf("L2_acc = %d\n", *L2_acc);
+if( (*L2_acc) == 144){
+  printf("Test done !\n");
+}else{
+  printf("Error!\n");
+}
 
 // Free L2 memory
 //pi_l2_free(cl_task, sizeof(struct pi_cluster_task));
@@ -699,8 +794,8 @@ pi_l2_free(L2_va , V_size);
 pi_l2_free(L2_vb , V_size);
 pi_l2_free(L2_acc, sizeof(uint32_t));
 
+
 // Terminate and exit the test
-printf("Test done !\n");
 pmsis_exit(errors);
 
   /*
@@ -727,7 +822,12 @@ pmsis_exit(errors);
 }// end main 
 
 int main(void){
-      printf("\n\n\t    *** Dot product test *** \n\n");
+      printf("\n\n");
+      printf("                      #############################################\n");
+      printf("                      #                                           #\n");
+      printf("                      #          Dot product test                 #\n");
+      printf("                      #                                           #\n");
+      printf("                      #############################################\n\n\n");
       return pmsis_kickoff((void *) fc_main);
 }
 
